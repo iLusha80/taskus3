@@ -8,7 +8,7 @@ class Column(db.Model):
     position = db.Column(db.Integer, nullable=False)
     created_at = db.Column(db.Text, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     updated_at = db.Column(db.Text, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), onupdate=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    metadata = db.Column(db.Text, default='{}')
+    column_metadata = db.Column(db.Text, default='{}')
 
     cards = db.relationship('Card', backref='column', lazy=True, cascade="all, delete-orphan")
 

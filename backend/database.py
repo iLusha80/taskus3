@@ -11,8 +11,8 @@ convention = {
     "pk": "pk_%(table_name)s"
 }
 
-metadata = MetaData(naming_convention=convention)
-db = SQLAlchemy(metadata=metadata)
+custom_metadata = MetaData(naming_convention=convention)
+db = SQLAlchemy(metadata=custom_metadata)
 
 def init_db(app):
     with app.app_context():

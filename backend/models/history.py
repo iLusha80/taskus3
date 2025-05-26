@@ -10,7 +10,7 @@ class CardHistory(db.Model):
     old_value = db.Column(db.Text)
     new_value = db.Column(db.Text)
     duration_in_seconds = db.Column(db.Integer)
-    metadata = db.Column(db.Text, default='{}')
+    history_metadata = db.Column(db.Text, default='{}')
 
     def to_dict(self):
         return {
