@@ -3,6 +3,11 @@ from flask_cors import CORS
 from config import Config
 from database import db, init_db
 from api import register_blueprints
+from models.project import Project
+from models.board import Board
+from models.column import Column
+from models.card import Card
+from models.history import CardHistory
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -15,6 +20,3 @@ with app.app_context():
     init_db(app)
 
 register_blueprints(app)
-
-# if __name__ == '__main__':
-#     app.run(debug=True, host='0.0.0.0')
