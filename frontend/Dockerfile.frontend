@@ -1,0 +1,11 @@
+# Используем образ Nginx для отдачи статических файлов
+FROM nginx:alpine
+
+# Копируем статические файлы фронтенда в директорию Nginx
+COPY . /usr/share/nginx/html
+
+# Открываем порт Nginx
+EXPOSE 80
+
+# Запускаем Nginx
+CMD ["nginx", "-g", "daemon off;"]
