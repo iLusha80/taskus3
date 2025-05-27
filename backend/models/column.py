@@ -20,5 +20,5 @@ class Column(db.Model):
             'position': self.position,
             'created_at': self.created_at,
             'updated_at': self.updated_at,
-            'metadata': self.metadata
+            'metadata': self.column_metadata
         }

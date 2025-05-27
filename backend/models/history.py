@@ -22,5 +22,5 @@ class CardHistory(db.Model):
             'old_value': self.old_value,
             'new_value': self.new_value,
             'duration_in_seconds': self.duration_in_seconds,
-            'metadata': self.metadata
+            'metadata': self.history_metadata
         }
