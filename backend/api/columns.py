@@ -17,8 +17,8 @@ def create_column(board_id):
     position = data.get('position')
     metadata = data.get('metadata', '{}')
 
-    if not name or position is None:
-        return jsonify({'error': 'Name and position are required'}), 400
+    if not name:
+        return jsonify({'error': 'Name is required'}), 400
 
     new_column = ColumnService.create_column(board_id, name, position, metadata)
     if new_column is None:

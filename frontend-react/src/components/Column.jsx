@@ -52,7 +52,7 @@ function Column({ column }) {
         const { cardTitle, cardDescription } = formData;
         if (cardTitle) {
           try {
-            const newCard = await api.createCard(id, { title: cardTitle, description: cardDescription });
+            const newCard = await api.createCard(id, { title: cardTitle, description: cardDescription, position: cards.length });
             if (newCard && newCard.id) {
               showNotification(`Карточка "${newCard.title}" успешно создана!`, 'success');
               fetchCards();
@@ -98,9 +98,6 @@ function Column({ column }) {
     <div ref={setNodeRef} style={style} className="column">
       <div className="column-header" {...attributes} {...listeners}>
         <h3>{name}</h3>
-        <button className="add-card-button" onClick={handleAddCard}>
-          <i className="fas fa-plus"></i>
-        </button>
       </div>
       <div className="cards-container">
         {cards.length > 0 ? (

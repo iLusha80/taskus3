@@ -29,36 +29,60 @@ function BoardPage() {
     }
   }, [boardId]);
 
+  const fixedColumns = [
+    { id: 'todo', name: 'К выполнению', cards: [] },
+    { id: 'in-progress', name: 'В работе', cards: [] },
+    { id: 'in-review', name: 'На проверке', cards: [] },
+    { id: 'done', name: 'Выполнено', cards: [] },
+  ];
+
   const fetchColumns = async () => {
     try {
       const data = await api.getColumns(boardId);
-      setColumns(data);
+      // Распределяем существующие карточки по фиксированным колонкам
+      const updatedFixedColumns = fixedColumns.map(col => ({ ...col, cards: [] }));
+      data.forEach(backendColumn => {
+        backendColumn.cards.forEach(card => {
+          const targetCol = updatedFixedColumns.find(fixedCol => fixedCol.name === backendColumn.name);
+          if (targetCol) {
+            targetCol.cards.push(card);
+          } else {
+            // Если колонка не найдена, добавляем карточку в первую колонку по умолчанию
+            updatedFixedColumns[0].cards.push(card);
+          }
+        });
+      });
+      setColumns(updatedFixedColumns);
     } catch (error) {
       showNotification('Ошибка при загрузке колонок.', 'error');
       console.error('Error fetching columns:', error);
+      setColumns(fixedColumns); // Устанавливаем фиксированные колонки в случае ошибки
     }
   };
 
-  const handleAddColumn = () => {
+  const handleAddCardAtBoardLevel = () => {
     setModalConfig({
-      title: 'Создать новую колонку',
+      title: 'Создать новую задачу',
       fields: [
-        { id: 'columnName', label: 'Название колонки', type: 'text', required: true }
+        { id: 'columnId', label: 'Колонка', type: 'select', options: fixedColumns.map(col => ({ value: col.id, label: col.name })), required: true },
+        { id: 'cardTitle', label: 'Название задачи', type: 'text', required: true },
+        { id: 'cardDescription', label: 'Описание задачи (необязательно)', type: 'textarea', required: false }
       ],
       onSave: async (formData) => {
-        const { columnName } = formData;
-        if (columnName) {
+        const { columnId, cardTitle, cardDescription } = formData;
+        if (columnId && cardTitle) {
           try {
-            const newColumn = await api.createColumn(boardId, { name: columnName });
-            if (newColumn && newColumn.id) {
-              showNotification(`Колонка "${newColumn.name}" успешно создана!`, 'success');
-              fetchColumns();
+            const targetColumn = columns.find(col => col.id === columnId);
+            const newCard = await api.createCard(columnId, { title: cardTitle, description: cardDescription, position: targetColumn ? targetColumn.cards.length : 0 });
+            if (newCard && newCard.id) {
+              showNotification(`Задача "${newCard.title}" успешно создана!`, 'success');
+              fetchColumns(); // Перезагрузить колонки, чтобы обновить карточки
             } else {
-              showNotification('Ошибка при создании колонки.', 'error');
+              showNotification('Ошибка при создании задачи.', 'error');
             }
           } catch (error) {
-            showNotification('Ошибка при создании колонки.', 'error');
-            console.error('Error creating column:', error);
+            showNotification('Ошибка при создании задачи.', 'error');
+            console.error('Error creating card:', error);
           }
         }
       },
@@ -99,8 +123,8 @@ function BoardPage() {
       <BoardNavigation />
       <div className="board-header">
         <h2>Доска</h2>
-        <button className="add-button" onClick={handleAddColumn}>
-          <i className="fas fa-plus"></i> Добавить новую колонку
+        <button className="add-button" onClick={handleAddCardAtBoardLevel}>
+          <i className="fas fa-plus"></i> Добавить новую задачу
         </button>
       </div>
       <DndContext
@@ -110,13 +134,9 @@ function BoardPage() {
       >
         <div className="columns-container">
           <SortableContext items={columns.map(col => col.id)}>
-            {columns.length > 0 ? (
-              columns.map(column => (
-                <Column key={column.id} column={column} />
-              ))
-            ) : (
-              <p>Пока нет колонок. Создайте первую!</p>
-            )}
+            {columns.map(column => (
+              <Column key={column.id} column={column} />
+            ))}
           </SortableContext>
         </div>
       </DndContext>

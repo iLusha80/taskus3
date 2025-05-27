@@ -24,8 +24,8 @@ def create_card(column_id):
     position = data.get('position')
     metadata = data.get('metadata', '{}')
 
-    if not title or position is None:
-        return jsonify({'error': 'Title and position are required'}), 400
+    if not title:
+        return jsonify({'error': 'Title is required'}), 400
 
     new_card = CardService.create_card(column_id, title, description, status, priority, assigned_agent_id, task_type, start_date, due_date, position, metadata)
     if new_card is None:
