@@ -5,21 +5,21 @@ const Column = {
         columnElement.dataset.columnId = columnData.id;
         columnElement.innerHTML = `
             <h3>${columnData.name}</h3>
-            <div class="cards-container"></div>
-            <button class="add-card-button" data-column-id="${columnData.id}">Добавить карточку</button>
-            <button class="delete-column-button" data-column-id="${columnData.id}">Удалить колонку</button>
+            <div class="cards-container" data-column-id="${columnData.id}"></div>
+            <button class="add-button add-card-button" data-column-id="${columnData.id}"><i class="fas fa-plus"></i> Добавить задачу</button>
+            <button class="delete-button delete-column-button" data-column-id="${columnData.id}"><i class="fas fa-trash-alt"></i> Удалить колонку</button>
         `;
 
         const cardsContainer = columnElement.querySelector('.cards-container');
         const cards = await api.getCards(columnData.id);
 
         if (cards && cards.length > 0) {
-            cards.forEach(cardData => {
-                const cardElement = Card.render(cardData);
+            for (const cardData of cards) {
+                const cardElement = await Card.render(cardData);
                 cardsContainer.appendChild(cardElement);
-            });
+            }
         } else {
-            cardsContainer.innerHTML = '<p>Нет задач</p>';
+            cardsContainer.innerHTML = '<p>Нет задач.</p>';
         }
 
         // Инициализация Drag and Drop для этой колонки
@@ -34,35 +34,47 @@ const Column = {
 
     handleAddCard: async (event) => {
         const columnId = event.target.dataset.columnId;
-        const cardTitle = prompt('Введите название новой задачи:');
-        if (cardTitle) {
-            const cardsInColumn = document.querySelector(`.column[data-column-id="${columnId}"] .cards-container`).children.length;
-            const newCard = await api.createCard(columnId, {
-                title: cardTitle,
-                description: '', // Описание пока пустое, можно будет редактировать
-                position: cardsInColumn // Добавляем в конец
-            });
-            if (newCard && newCard.id) {
-                alert(`Задача "${newCard.title}" успешно создана!`);
-                // Перезагружаем доску, чтобы обновить UI
-                router.loadRoute(`/project/${BoardView.currentProjectId}/board/${BoardView.currentBoardId}`);
-            } else {
-                alert('Ошибка при создании задачи.');
+        Modal.show({
+            title: 'Создать новую задачу',
+            fields: [
+                { id: 'cardTitle', label: 'Название задачи', type: 'text', required: true },
+                { id: 'cardDescription', label: 'Описание задачи (необязательно)', type: 'textarea', required: false }
+            ],
+            onSave: async (formData) => {
+                const { cardTitle, cardDescription } = formData;
+                if (cardTitle) {
+                    const newCard = await api.createCard(columnId, {
+                        title: cardTitle,
+                        description: cardDescription,
+                        position: document.querySelector(`.cards-container[data-column-id="${columnId}"]`).children.length
+                    });
+                    if (newCard && newCard.id) {
+                        alert(`Задача "${newCard.title}" успешно создана!`);
+                        router.loadRoute(window.location.pathname); // Перезагружаем доску, чтобы обновить список задач
+                    } else {
+                        alert('Ошибка при создании задачи.');
+                    }
+                }
             }
-        }
+        });
     },
 
     handleDeleteColumn: async (event) => {
         const columnId = event.target.dataset.columnId;
-        if (confirm('Вы уверены, что хотите удалить эту колонку и все задачи в ней?')) {
-            const success = await api.deleteColumn(columnId);
-            if (success) {
-                alert('Колонка успешно удалена.');
-                router.loadRoute(`/project/${BoardView.currentProjectId}/board/${BoardView.currentBoardId}`); // Перезагружаем доску
-            } else {
-                alert('Ошибка при удалении колонки.');
-            }
-        }
+        Modal.show({
+            title: 'Подтверждение удаления',
+            message: 'Вы уверены, что хотите удалить эту колонку и все связанные с ней задачи? Это действие необратимо.',
+            onConfirm: async () => {
+                const success = await api.deleteColumn(columnId);
+                if (success) {
+                    alert('Колонка успешно удалена.');
+                    router.loadRoute(window.location.pathname); // Перезагружаем доску
+                } else {
+                    alert('Ошибка при удалении колонки.');
+                }
+            },
+            isConfirm: true
+        });
     }
 };
 

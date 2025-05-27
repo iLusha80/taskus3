@@ -1,4 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await BoardNavigation.render(); // Инициализируем навигацию
     // Инициализация роутера
     // Добавление маршрутов
     router.addRoute('/', async () => {
@@ -7,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     router.addRoute('/project/:projectId/board/:boardId', async (params) => {
         await BoardView.render(params.projectId, params.boardId);
+        BoardNavigation.highlightActive(params.projectId, params.boardId); // Выделяем активную доску
     });
 
     // Инициализация роутера

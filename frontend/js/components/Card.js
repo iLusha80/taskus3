@@ -13,14 +13,43 @@ const Card = {
                 Статус: ${cardData.status} | Приоритет: ${cardData.priority}
                 ${cardData.assigned_agent_id ? `| Агент: ${cardData.assigned_agent_id}` : ''}
             </div>
+            <button class="delete-button delete-card-button" data-card-id="${cardData.id}"><i class="fas fa-trash-alt"></i> Удалить</button>
         `;
+        console.log('Card rendered:', cardData.id, cardData.title); // Лог для отладки
 
-        cardElement.addEventListener('click', () => Card.handleCardClick(cardData.id));
+        cardElement.querySelector('.delete-card-button').addEventListener('click', Card.handleDeleteCard);
+        cardElement.addEventListener('click', (event) => {
+            // Предотвращаем всплытие события, если клик был по кнопке удаления
+            if (event.target.closest('.delete-card-button')) {
+                return;
+            }
+            Card.handleCardClick(cardData.id);
+        });
 
         return cardElement;
     },
 
+    handleDeleteCard: async (event) => {
+        const cardId = event.target.dataset.cardId;
+        Modal.show({
+            title: 'Подтверждение удаления',
+            message: 'Вы уверены, что хотите удалить эту задачу? Это действие необратимо.',
+            onConfirm: async () => {
+                const success = await api.deleteCard(cardId);
+                if (success) {
+                    alert('Задача успешно удалена.');
+                    Modal.close(); // Закрываем модальное окно после успешного удаления
+                    router.loadRoute(window.location.pathname); // Перезагружаем доску
+                } else {
+                    alert('Ошибка при удалении задачи.');
+                }
+            },
+            isConfirm: true
+        });
+    },
+
     handleCardClick: async (cardId) => {
+        console.log('Card clicked, ID:', cardId); // Лог для отладки
         const card = await api.getCard(cardId);
         if (!card) {
             alert('Карточка не найдена.');
@@ -70,7 +99,7 @@ const Card = {
                     <textarea id="card-metadata" name="metadata">${card.metadata || '{}'}</textarea>
 
                     <button type="submit" class="save-button">Сохранить</button>
-                    <button type="button" class="delete-button">Удалить задачу</button>
+                    <button type="button" class="delete-button delete-card-button-modal"><i class="fas fa-trash-alt"></i> Удалить задачу</button>
                 </form>
                 <h3>История изменений</h3>
                 <div id="card-history-container">Загрузка истории...</div>
@@ -102,18 +131,12 @@ const Card = {
                 }
                 return true; // Закрываем модальное окно
             },
-            onDelete: async () => {
-                if (confirm('Вы уверены, что хотите удалить эту задачу?')) {
-                    const success = await api.deleteCard(cardId);
-                    if (success) {
-                        alert('Задача успешно удалена.');
-                        Modal.close();
-                        router.loadRoute(`/project/${BoardView.currentProjectId}/board/${BoardView.currentBoardId}`); // Перезагружаем доску
-                    } else {
-                        alert('Ошибка при удалении задачи.');
-                    }
+            onOpen: () => {
+                // Добавляем обработчик для кнопки удаления внутри модального окна
+                const deleteButtonModal = document.querySelector('.delete-card-button-modal');
+                if (deleteButtonModal) {
+                    deleteButtonModal.addEventListener('click', () => Card.handleDeleteCard(cardId));
                 }
-                return false; // Не закрываем модальное окно автоматически после удаления, ждем перезагрузки
             }
         });
 

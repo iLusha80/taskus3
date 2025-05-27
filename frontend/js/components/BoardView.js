@@ -11,9 +11,9 @@ const BoardView = {
             <div class="board-header">
                 <h2 id="board-name">Загрузка доски...</h2>
                 <div class="board-actions">
-                    <button class="add-column-button">Добавить колонку</button>
-                    <button class="add-board-button">Добавить доску</button>
-                    <button class="delete-board-button">Удалить текущую доску</button>
+                    <button class="add-button add-column-button"><i class="fas fa-plus"></i> Добавить колонку</button>
+                    <button class="add-button add-board-button"><i class="fas fa-plus"></i> Добавить доску</button>
+                    <button class="delete-button delete-board-button"><i class="fas fa-trash-alt"></i> Удалить текущую доску</button>
                 </div>
             </div>
             <div class="board-container"></div>
@@ -53,47 +53,67 @@ const BoardView = {
     },
 
     handleAddColumn: async () => {
-        const columnName = prompt('Введите название новой колонки:');
-        if (columnName) {
-            const boardContainer = document.querySelector('.board-container');
-            const currentColumns = boardContainer.querySelectorAll('.column').length;
-            const newColumn = await api.createColumn(BoardView.currentBoardId, {
-                name: columnName,
-                position: currentColumns // Добавляем в конец
-            });
-            if (newColumn && newColumn.id) {
-                alert(`Колонка "${newColumn.name}" успешно создана!`);
-                router.loadRoute(`/project/${BoardView.currentProjectId}/board/${BoardView.currentBoardId}`); // Перезагружаем доску
-            } else {
-                alert('Ошибка при создании колонки.');
+        Modal.show({
+            title: 'Создать новую колонку',
+            fields: [
+                { id: 'columnName', label: 'Название колонки', type: 'text', required: true }
+            ],
+            onSave: async (formData) => {
+                const { columnName } = formData;
+                if (columnName) {
+                    const boardContainer = document.querySelector('.board-container');
+                    const currentColumns = boardContainer.querySelectorAll('.column').length;
+                    const newColumn = await api.createColumn(BoardView.currentBoardId, {
+                        name: columnName,
+                        position: currentColumns
+                    });
+                    if (newColumn && newColumn.id) {
+                        alert(`Колонка "${newColumn.name}" успешно создана!`);
+                        router.loadRoute(`/project/${BoardView.currentProjectId}/board/${BoardView.currentBoardId}`);
+                    } else {
+                        alert('Ошибка при создании колонки.');
+                    }
+                }
             }
-        }
+        });
     },
 
     handleAddBoard: async () => {
-        const boardName = prompt('Введите название новой доски:');
-        if (boardName) {
-            const newBoard = await api.createBoard(BoardView.currentProjectId, { name: boardName });
-            if (newBoard && newBoard.id) {
-                alert(`Доска "${newBoard.name}" успешно создана!`);
-                router.navigate(`/project/${BoardView.currentProjectId}/board/${newBoard.id}`); // Переходим на новую доску
-            } else {
-                alert('Ошибка при создании доски.');
+        Modal.show({
+            title: 'Создать новую доску',
+            fields: [
+                { id: 'boardName', label: 'Название доски', type: 'text', required: true }
+            ],
+            onSave: async (formData) => {
+                const { boardName } = formData;
+                if (boardName) {
+                    const newBoard = await api.createBoard(BoardView.currentProjectId, { name: boardName });
+                    if (newBoard && newBoard.id) {
+                        alert(`Доска "${newBoard.name}" успешно создана!`);
+                        router.navigate(`/project/${BoardView.currentProjectId}/board/${newBoard.id}`);
+                    } else {
+                        alert('Ошибка при создании доски.');
+                    }
+                }
             }
-        }
+        });
     },
 
     handleDeleteBoard: async () => {
-        if (confirm('Вы уверены, что хотите удалить текущую доску и все связанные с ней колонки и задачи?')) {
-            const success = await api.deleteBoard(BoardView.currentBoardId);
-            if (success) {
-                alert('Доска успешно удалена.');
-                // После удаления доски, возвращаемся к списку проектов
-                router.navigate('/');
-            } else {
-                alert('Ошибка при удалении доски.');
-            }
-        }
+        Modal.show({
+            title: 'Подтверждение удаления',
+            message: 'Вы уверены, что хотите удалить текущую доску и все связанные с ней колонки и задачи? Это действие необратимо.',
+            onConfirm: async () => {
+                const success = await api.deleteBoard(BoardView.currentBoardId);
+                if (success) {
+                    alert('Доска успешно удалена.');
+                    router.navigate('/');
+                } else {
+                    alert('Ошибка при удалении доски.');
+                }
+            },
+            isConfirm: true
+        });
     }
 };
 
