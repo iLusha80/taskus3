@@ -160,34 +160,54 @@ nav ul li a:hover {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.75rem 1.25rem;
     border: none;
     border-radius: 8px; /* Увеличить скругление */
     cursor: pointer;
-    font-size: 1rem;
     font-weight: 500;
     transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
     box-shadow: 0 2px 4px var(--shadow-light);
 }
 
-.add-button {
-    background-color: var(--primary-blue); /* Акцентный синий */
+/* Стили для основной кнопки добавления задачи */
+.add-card-global-button {
+    background-color: var(--primary-blue);
     color: var(--white);
+    padding: 1.1rem 2rem; /* Сделать еще более заметной */
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-right: 1.5rem; /* Отделить от других кнопок */
 }
 
-.add-button:hover {
-    background-color: var(--primary-blue-dark); /* Темнее синий при наведении */
+.add-card-global-button:hover {
+    background-color: var(--primary-blue-dark);
     transform: translateY(-1px);
     box-shadow: 0 4px 8px var(--shadow-medium);
 }
 
-.delete-button {
+/* Стили для кнопок добавления колонки/доски */
+.add-column-button, .add-board-button {
     background-color: var(--secondary-gray); /* Нейтральный серый */
     color: var(--white);
+    padding: 0.9rem 1.4rem; /* Меньше, чем основная кнопка */
+    font-size: 1.05rem;
 }
 
-.delete-button:hover {
-    background-color: var(--secondary-gray-dark); /* Темнее серый при наведении */
+.add-column-button:hover, .add-board-button:hover {
+    background-color: var(--secondary-gray-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px var(--shadow-medium);
+}
+
+/* Стили для кнопки удаления доски */
+.delete-board-button {
+    background-color: var(--danger-red); /* Красный для деструктивного действия */
+    color: var(--white);
+    padding: 0.9rem 1.4rem;
+    font-size: 1.05rem;
+}
+
+.delete-board-button:hover {
+    background-color: var(--danger-red-dark);
     transform: translateY(-1px);
     box-shadow: 0 4px 8px var(--shadow-medium);
 }
