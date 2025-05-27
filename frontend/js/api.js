@@ -1,3 +1,4 @@
+import Notification from './components/Notification.js';
 const API_BASE_URL = 'http://localhost:5000/api/v1';
 
 const api = {
@@ -140,7 +141,7 @@ const api = {
 window.addEventListener('unhandledrejection', event => {
     console.error('Unhandled promise rejection:', event.reason);
     // Здесь можно добавить логику для отображения сообщения об ошибке пользователю
-    alert('Произошла ошибка: ' + event.reason.message || event.reason);
+    Notification.show('Произошла ошибка: ' + (event.reason.message || event.reason), 'error');
 });
 
 // Экспортируем объект api для использования в других модулях

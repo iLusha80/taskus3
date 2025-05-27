@@ -1,3 +1,4 @@
+import Notification from './components/Notification.js';
 document.addEventListener('DOMContentLoaded', async () => {
     await BoardNavigation.render(); // Инициализируем навигацию
     // Инициализация роутера

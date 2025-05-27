@@ -1,3 +1,4 @@
+import Notification from './Notification.js';
 const DragAndDrop = {
     draggingCard: null, // Карточка, которую сейчас перетаскивают
 
@@ -76,7 +77,7 @@ const DragAndDrop = {
                 // Перезагружаем доску, чтобы обновить UI и историю
                 router.loadRoute(`/project/${BoardView.currentProjectId}/board/${BoardView.currentBoardId}`);
             } else {
-                alert('Ошибка при перемещении карточки.');
+                Notification.show('Ошибка при перемещении карточки.', 'error');
                 // В случае ошибки, можно откатить изменения UI, если нужно
                 router.loadRoute(`/project/${BoardView.currentProjectId}/board/${BoardView.currentBoardId}`);
             }

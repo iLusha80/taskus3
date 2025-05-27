@@ -1,3 +1,4 @@
+import Notification from './Notification.js';
 const ProjectList = {
     render: async () => {
         const appRoot = document.getElementById('app-root');
@@ -45,10 +46,10 @@ const ProjectList = {
                 if (projectName) {
                     const newProject = await api.createProject({ name: projectName, description: projectDescription });
                     if (newProject && newProject.id) {
-                        alert(`Проект "${newProject.name}" успешно создан!`);
+                        Notification.show(`Проект "${newProject.name}" успешно создан!`, 'success');
                         router.loadRoute('/'); // Перезагружаем список проектов
                     } else {
-                        alert('Ошибка при создании проекта.');
+                        Notification.show('Ошибка при создании проекта.', 'error');
                     }
                 }
             }
@@ -79,10 +80,10 @@ const ProjectList = {
                         if (boardName) {
                             const newBoard = await api.createBoard(projectId, { name: boardName });
                             if (newBoard && newBoard.id) {
-                                alert(`Доска "${newBoard.name}" успешно создана!`);
+                                Notification.show(`Доска "${newBoard.name}" успешно создана!`, 'success');
                                 router.navigate(`/project/${projectId}/board/${newBoard.id}`);
                             } else {
-                                alert('Ошибка при создании доски.');
+                                Notification.show('Ошибка при создании доски.', 'error');
                             }
                         }
                     }
@@ -96,10 +97,10 @@ const ProjectList = {
                 onConfirm: async () => {
                     const success = await api.deleteProject(projectId);
                     if (success) {
-                        alert('Проект успешно удален.');
+                        Notification.show('Проект успешно удален.', 'success');
                         router.loadRoute('/'); // Перезагружаем список проектов
                     } else {
-                        alert('Ошибка при удалении проекта.');
+                        Notification.show('Ошибка при удалении проекта.', 'error');
                     }
                 },
                 isConfirm: true

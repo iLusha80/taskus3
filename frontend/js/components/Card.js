@@ -1,3 +1,4 @@
+import Notification from './Notification.js';
 const Card = {
     render: (cardData) => {
         const cardElement = document.createElement('div');
@@ -49,11 +50,11 @@ const Card = {
             onConfirm: async () => {
                 const success = await api.deleteCard(cardId);
                 if (success) {
-                    alert('Задача успешно удалена.');
+                    Notification.show('Задача успешно удалена.', 'success');
                     Modal.close(); // Закрываем модальное окно после успешного удаления
                     router.loadRoute(window.location.pathname); // Перезагружаем доску
                 } else {
-                    alert('Ошибка при удалении задачи.');
+                    Notification.show('Ошибка при удалении задачи.', 'error');
                 }
             },
             isConfirm: true
@@ -64,7 +65,7 @@ const Card = {
         console.log('Card clicked, ID:', cardId); // Лог для отладки
         const card = await api.getCard(cardId);
         if (!card) {
-            alert('Карточка не найдена.');
+            Notification.show('Карточка не найдена.', 'error');
             return;
         }
 
@@ -128,17 +129,17 @@ const Card = {
                     updatedData.metadata = JSON.parse(updatedData.metadata);
                 } catch (e) {
                     console.error('Неверный формат JSON для метаданных:', e);
-                    alert('Ошибка: Неверный формат JSON для метаданных.');
+                    Notification.show('Ошибка: Неверный формат JSON для метаданных.', 'error');
                     return false; // Предотвращаем закрытие модального окна
                 }
 
                 const updatedCard = await api.updateCard(cardId, updatedData);
                 if (updatedCard && updatedCard.id) {
-                    alert('Задача успешно обновлена!');
+                    Notification.show('Задача успешно обновлена!', 'success');
                     Modal.close();
                     router.loadRoute(`/project/${BoardView.currentProjectId}/board/${BoardView.currentBoardId}`); // Перезагружаем доску
                 } else {
-                    alert('Ошибка при обновлении задачи.');
+                    Notification.show('Ошибка при обновлении задачи.', 'error');
                     return false; // Предотвращаем закрытие модального окна
                 }
                 return true; // Закрываем модальное окно
