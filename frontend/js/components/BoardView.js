@@ -12,9 +12,9 @@ const BoardView = {
                 <h2 id="board-name">Загрузка доски...</h2>
                 <div class="board-actions">
                     <button class="add-button add-card-global-button" title="Добавить задачу">Добавить задачу</button>
-                    <button class="add-button add-column-button" title="Добавить колонку">+</button>
-                    <button class="add-button add-board-button" title="Добавить доску">+</button>
-                    <button class="delete-button delete-board-button" title="Удалить текущую доску">×</button>
+                    <button class="add-button add-column-button" title="Добавить колонку">+ Колонка</button>
+                    <button class="add-button add-board-button" title="Добавить доску">+ Доска</button>
+                    <button class="delete-button delete-board-button" title="Удалить текущую доску">Удалить доску</button>
                 </div>
             </div>
             <div class="board-container"></div>
