@@ -1,8 +1,67 @@
 import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 import { useParams, useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import { useNotification } from '../contexts/NotificationContext';
-import './BoardNavigation.css'; // Создадим этот файл позже
+import StyledButton from './StyledButton'; // Import StyledButton
+import { FaArrowLeft } from 'react-icons/fa'; // Import left arrow icon
+
+const MainNav = styled.nav`
+  background-color: ${({ theme }) => theme.colors.backgroundLight};
+  padding: ${({ theme }) => theme.spacing.small} ${({ theme }) => theme.spacing.medium};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.grayLight};
+  box-shadow: ${({ theme }) => theme.boxShadow.small};
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+`;
+
+const NavList = styled.ul`
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.medium}; /* Increased gap */
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+`;
+
+const NavItem = styled.li`
+  display: inline-block;
+`;
+
+const ProjectNameHeading = styled.h3`
+  margin: 0;
+  color: ${({ theme }) => theme.colors.text};
+  font-size: ${({ theme }) => theme.typography.heading3.fontSize};
+  font-weight: ${({ theme }) => theme.typography.heading3.fontWeight};
+`;
+
+const BoardButton = styled(StyledButton)`
+  background-color: ${({ theme }) => theme.colors.grayLight};
+  color: ${({ theme }) => theme.colors.text};
+  padding: ${({ theme }) => theme.spacing.small} ${({ theme }) => theme.spacing.medium};
+  font-weight: 500;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.grayMedium};
+    color: ${({ theme }) => theme.colors.white};
+  }
+
+  &.active {
+    background-color: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.white};
+    font-weight: bold;
+    &:hover {
+       background-color: ${({ theme }) => theme.colors.primary};
+       opacity: 0.9;
+    }
+  }
+`;
+
+const NoBoardsMessage = styled.p`
+  color: ${({ theme }) => theme.colors.grayDark};
+  margin: 0;
+`;
+
 
 function BoardNavigation() {
   const { projectId, boardId } = useParams();
@@ -34,30 +93,30 @@ function BoardNavigation() {
   };
 
   return (
-    <nav className="main-nav">
-      <ul>
-        <li>
-          <button onClick={() => navigate('/')} className="button secondary">
-            ← К проектам
-          </button>
-        </li>
-        {projectName && <li><h3>Проект: {projectName}</h3></li>}
+    <MainNav>
+      <NavList>
+        <NavItem>
+          <StyledButton onClick={() => navigate('/')} className="secondary"> {/* Use StyledButton with secondary class */}
+            <FaArrowLeft /> К проектам
+          </StyledButton>
+        </NavItem>
+        {projectName && <NavItem><ProjectNameHeading>Проект: {projectName}</ProjectNameHeading></NavItem>}
         {boards.length > 0 ? (
           boards.map(board => (
-            <li key={board.id}>
-              <button
+            <NavItem key={board.id}>
+              <BoardButton
                 onClick={() => handleBoardClick(board.id)}
-                className={`button ${board.id == boardId ? 'active-board' : ''}`}
+                className={board.id == boardId ? 'active' : ''} // Use 'active' class
               >
                 {board.name}
-              </button>
-            </li>
+              </BoardButton>
+            </NavItem>
           ))
         ) : (
-          <li><p>Нет досок</p></li>
+          <NavItem><NoBoardsMessage>Нет досок</NoBoardsMessage></NavItem>
         )}
-      </ul>
-    </nav>
+      </NavList>
+    </MainNav>
   );
 }
 

@@ -1,13 +1,47 @@
 import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 import { useParams } from 'react-router-dom';
 import { DndContext, closestCorners, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { SortableContext, arrayMove, sortableKeyboardCoordinates } from '@dnd-kit/sortable';
 import api from '../services/api';
 import { useNotification } from '../contexts/NotificationContext';
 import BoardNavigation from '../components/BoardNavigation';
-import Column from '../components/Column'; // Будет создан
+import Column from '../components/Column';
 import Modal from '../components/Modal';
-import './BoardPage.css'; // Создадим этот файл позже
+import StyledButton from '../components/StyledButton'; // Import StyledButton
+import { FaPlus } from 'react-icons/fa'; // Import plus icon
+
+const BoardPageContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: ${({ theme }) => theme.spacing.medium};
+`;
+
+const BoardHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+`;
+
+const BoardTitle = styled.h2`
+  margin: 0;
+  font-size: ${({ theme }) => theme.typography.heading2.fontSize};
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const ColumnsContainer = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.medium};
+  justify-content: flex-start;
+  padding: 0 ${({ theme }) => theme.spacing.medium};
+  padding-bottom: ${({ theme }) => theme.spacing.small}; /* For scrollbar */
+  overflow-x: auto;
+  margin-top: ${({ theme }) => theme.spacing.medium};
+`;
+
+// Removed local AddButton styled component
+
 
 function BoardPage() {
   const { projectId, boardId } = useParams();
@@ -119,26 +153,26 @@ function BoardPage() {
   };
 
   return (
-    <div className="board-page-container">
+    <BoardPageContainer>
       <BoardNavigation />
-      <div className="board-header">
-        <h2>Доска</h2>
-        <button className="add-button" onClick={handleAddCardAtBoardLevel}>
-          <i className="fas fa-plus"></i> Добавить новую задачу
-        </button>
-      </div>
+      <BoardHeader>
+        <BoardTitle>Доска</BoardTitle>
+        <StyledButton onClick={handleAddCardAtBoardLevel}> {/* Use StyledButton */}
+          <FaPlus /> Добавить новую задачу
+        </StyledButton>
+      </BoardHeader>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
         onDragEnd={handleDragEnd}
       >
-        <div className="columns-container">
+        <ColumnsContainer>
           <SortableContext items={columns.map(col => col.id)}>
             {columns.map(column => (
               <Column key={column.id} column={column} />
             ))}
           </SortableContext>
-        </div>
+        </ColumnsContainer>
       </DndContext>
 
       {isModalOpen && (
@@ -152,7 +186,7 @@ function BoardPage() {
           onClose={modalConfig.onClose}
         />
       )}
-    </div>
+    </BoardPageContainer>
   );
 }
 

@@ -1,11 +1,74 @@
 import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import api from '../services/api';
 import { useNotification } from '../contexts/NotificationContext';
-import Card from './Card'; // Будет создан
+import Card from './Card';
 import Modal from './Modal';
-import './Column.css'; // Создадим этот файл позже
+import { FaPlus } from 'react-icons/fa'; // Import plus icon
+
+const StyledColumn = styled.div`
+  background-color: ${({ theme }) => theme.colors.backgroundLight};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  padding: ${({ theme }) => theme.spacing.medium};
+  width: 300px;
+  max-height: calc(100vh - 180px); /* Keep existing height calculation */
+  display: flex;
+  flex-direction: column;
+  box-shadow: ${({ theme }) => theme.boxShadow.small};
+  flex-shrink: 0;
+  flex-grow: 1;
+`;
+
+const ColumnHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+  padding-bottom: ${({ theme }) => theme.spacing.small};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.grayLight};
+  cursor: grab;
+`;
+
+const ColumnTitle = styled.h3`
+  margin: 0;
+  font-size: ${({ theme }) => theme.typography.heading3.fontSize};
+  color: ${({ theme }) => theme.colors.text};
+`;
+
+const AddCardButton = styled.button`
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: ${({ theme }) => theme.colors.white};
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2em;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.primary}; /* Use primary color */
+    opacity: 0.9; /* Add slight opacity change on hover */
+  }
+`;
+
+const CardsContainer = styled.div`
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 5px; /* Keep for scrollbar */
+`;
+
+const NoCardsMessage = styled.p`
+  color: ${({ theme }) => theme.colors.grayDark};
+  text-align: center;
+  margin-top: ${({ theme }) => theme.spacing.medium};
+`;
+
 
 function Column({ column }) {
   const { id, name } = column;
@@ -95,19 +158,22 @@ function Column({ column }) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="column">
-      <div className="column-header" {...attributes} {...listeners}>
-        <h3>{name}</h3>
-      </div>
-      <div className="cards-container">
+    <StyledColumn ref={setNodeRef} style={style}>
+      <ColumnHeader {...attributes} {...listeners}>
+        <ColumnTitle>{name}</ColumnTitle>
+        <AddCardButton onClick={handleAddCard}>
+          <FaPlus /> {/* Use react-icons component */}
+        </AddCardButton>
+      </ColumnHeader>
+      <CardsContainer>
         {cards.length > 0 ? (
           cards.map(card => (
             <Card key={card.id} card={card} onDelete={handleDeleteCard} />
           ))
         ) : (
-          <p className="no-cards-message">Нет карточек</p>
+          <NoCardsMessage>Нет карточек</NoCardsMessage>
         )}
-      </div>
+      </CardsContainer>
 
       {isModalOpen && (
         <Modal
@@ -120,7 +186,7 @@ function Column({ column }) {
           onClose={modalConfig.onClose}
         />
       )}
-    </div>
+    </StyledColumn>
   );
 }
 

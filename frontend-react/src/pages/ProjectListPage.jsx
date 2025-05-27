@@ -1,9 +1,80 @@
 import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
 import api from '../services/api';
 import Modal from '../components/Modal';
 import { useNotification } from '../contexts/NotificationContext';
-import { useNavigate } from 'react-router-dom'; // Оставляем useNavigate для перехода
-import './ProjectListPage.css';
+import { useNavigate } from 'react-router-dom';
+import StyledButton from '../components/StyledButton'; // Import StyledButton
+import { FaPlus } from 'react-icons/fa'; // Import plus icon
+
+const ProjectListPageContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: ${({ theme }) => theme.spacing.medium};
+`;
+
+const PageTitle = styled.h2`
+  color: ${({ theme }) => theme.colors.text};
+  font-size: ${({ theme }) => theme.typography.heading2.fontSize};
+  font-weight: ${({ theme }) => theme.typography.heading2.fontWeight};
+  margin-top: 0;
+  margin-bottom: ${({ theme }) => theme.spacing.large};
+  text-align: center;
+`;
+
+const ProjectListGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: ${({ theme }) => theme.spacing.medium};
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const ProjectCard = styled.div`
+  background-color: ${({ theme }) => theme.colors.white};
+  border: 1px solid ${({ theme }) => theme.colors.grayLight};
+  border-radius: ${({ theme }) => theme.borderRadius.medium};
+  padding: ${({ theme }) => theme.spacing.medium};
+  box-shadow: ${({ theme }) => theme.boxShadow.medium};
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: ${({ theme }) => theme.boxShadow.large};
+  }
+`;
+
+const ProjectCardTitle = styled.h2`
+  color: ${({ theme }) => theme.colors.text};
+  font-size: ${({ theme }) => theme.typography.heading3.fontSize};
+  font-weight: ${({ theme }) => theme.typography.heading3.fontWeight};
+  margin-top: 0;
+  margin-bottom: ${({ theme }) => theme.spacing.small};
+  text-align: left;
+`;
+
+const ProjectCardDescription = styled.p`
+  color: ${({ theme }) => theme.colors.grayDark};
+  font-size: ${({ theme }) => theme.typography.small.fontSize};
+  line-height: ${({ theme }) => theme.typography.body.lineHeight};
+  flex-grow: 1;
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
+`;
+
+const NoProjectsMessage = styled.p`
+  color: ${({ theme }) => theme.colors.grayDark};
+  text-align: center;
+  margin-top: ${({ theme }) => theme.spacing.medium};
+`;
+
 
 function ProjectListPage({ handleAddProject, isModalOpen, modalConfig, setIsModalOpen, setModalConfig }) {
   const [projects, setProjects] = useState([]);
@@ -24,18 +95,13 @@ function ProjectListPage({ handleAddProject, isModalOpen, modalConfig, setIsModa
     }
   };
 
-  // handleAddProject теперь приходит через пропсы
-
-  // Удалены функции handleViewProject и handleDeleteProject
-
   const handleProjectCardClick = async (projectId) => {
     try {
       const boards = await api.getBoards(projectId);
       if (boards && boards.length > 0) {
         navigate(`/project/${projectId}/board/${boards[0].id}`);
       } else {
-        // Если досок нет, предлагаем создать новую
-         setModalConfig({
+        setModalConfig({
           title: 'Создать новую доску',
           message: 'У этого проекта пока нет досок. Создать новую доску?',
           fields: [
@@ -70,24 +136,26 @@ function ProjectListPage({ handleAddProject, isModalOpen, modalConfig, setIsModa
 
 
   return (
-    <div>
-      {/* Кнопка "Добавить новый проект" удалена отсюда */}
+    <ProjectListPageContainer>
+      {/* Assuming handleAddProject is passed down and triggers a modal */}
+      {/* Add Project Button - using StyledButton */}
+      <StyledButton onClick={handleAddProject}>
+        <FaPlus /> Добавить новый проект
+      </StyledButton>
 
-      <h2>Проекты</h2> {/* Заголовок остается */}
-      <div className="project-list">
+      <PageTitle>Проекты</PageTitle>
+      <ProjectListGrid>
         {projects.length > 0 ? (
           projects.map(project => (
-            // Добавлен onClick для перехода на страницу деталей проекта
-            <div key={project.id} className="project-card" onClick={() => handleProjectCardClick(project.id)}>
-              <h2>{project.name}</h2>
-              <p>{project.description || 'Нет описания'}</p>
-              {/* Удалены кнопки "Открыть доски" и "Удалить" */}
-            </div>
+            <ProjectCard key={project.id} onClick={() => handleProjectCardClick(project.id)}>
+              <ProjectCardTitle>{project.name}</ProjectCardTitle>
+              <ProjectCardDescription>{project.description || 'Нет описания'}</ProjectCardDescription>
+            </ProjectCard>
           ))
         ) : (
-          <p>Пока нет проектов. Создайте первый!</p>
+          <NoProjectsMessage>Пока нет проектов. Создайте первый!</NoProjectsMessage>
         )}
-      </div>
+      </ProjectListGrid>
 
       {isModalOpen && (
         <Modal
@@ -100,7 +168,7 @@ function ProjectListPage({ handleAddProject, isModalOpen, modalConfig, setIsModa
           onClose={modalConfig.onClose}
         />
       )}
-    </div>
+    </ProjectListPageContainer>
   );
 }
 
