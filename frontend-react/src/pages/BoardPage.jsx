@@ -119,7 +119,7 @@ function BoardPage() {
   };
 
   return (
-    <div>
+    <div className="board-page-container">
       <BoardNavigation />
       <div className="board-header">
         <h2>Доска</h2>
