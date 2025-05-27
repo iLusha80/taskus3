@@ -1,19 +1,22 @@
 /* Общие стили */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Inter', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f7f6;
-    color: #333;
+    background-color: #f0f2f5; /* Более светлый и мягкий фон */
+    color: #343a40; /* Более темный текст для контраста */
 }
 
 header {
-    background-color: #2c3e50;
-    color: #ecf0f1;
-    padding: 1rem 2rem;
+    background-color: #ffffff; /* Светлая шапка */
+    color: #343a40; /* Темный текст для контраста */
+    padding: 1.25rem 2.5rem; /* Увеличить отступы */
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Легкая тень */
 }
 
 header h1 {
@@ -29,204 +32,220 @@ nav ul {
 }
 
 nav ul li {
-    margin-left: 1.5rem;
+    margin-left: 1.75rem; /* Увеличить отступ */
 }
 
 nav ul li a {
-    color: #ecf0f1;
+    color: #495057; /* Более темный цвет ссылок */
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 500; /* Средний вес шрифта */
     transition: color 0.3s ease;
 }
 
 nav ul li a:hover {
-    color: #3498db;
+    color: #007bff; /* Акцентный синий */
 }
 
 main {
-    padding: 2rem;
+    max-width: 1200px; /* Центрирование основного содержимого */
+    margin: 0 auto; /* Центрирование по горизонтали */
+    padding: 2.5rem; /* Увеличить отступы */
 }
 
 footer {
-    background-color: #2c3e50;
-    color: #ecf0f1;
+    background-color: #ffffff; /* Светлый подвал */
+    color: #6c757d; /* Нейтральный цвет текста */
     text-align: center;
     padding: 1rem;
     position: fixed;
     bottom: 0;
     width: 100%;
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05); /* Легкая тень */
 }
 
 /* Стили для списка проектов */
 .project-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Увеличить минимальную ширину */
+    gap: 2.5rem; /* Увеличить отступы */
 }
 
 .project-card {
     background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-    transition: transform 0.2s ease;
+    border-radius: 10px; /* Более мягкие углы */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Более мягкая и заметная тень */
+    padding: 2.25rem; /* Увеличить отступы */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
 }
 
 .project-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-7px); /* Более выраженный эффект при наведении */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
 .project-card h2 {
     margin-top: 0;
-    color: #2c3e50;
-    font-size: 1.4rem;
+    color: #212529; /* Более темный заголовок */
+    font-size: 1.6rem; /* Немного увеличить размер */
+    font-weight: 600; /* Полужирный */
 }
 
 .project-card p {
-    color: #7f8c8d;
-    font-size: 0.9rem;
+    color: #6c757d; /* Нейтральный цвет текста */
+    font-size: 1.05rem; /* Немного увеличить размер */
     flex-grow: 1;
+    line-height: 1.5; /* Улучшить читаемость */
 }
 
 .project-card .actions {
-    margin-top: 1rem;
+    margin-top: 1.75rem; /* Увеличить отступ */
     display: flex;
-    gap: 0.5rem;
+    gap: 1rem; /* Увеличить отступ между кнопками */
 }
 
 .project-card .actions button {
-    padding: 0.6rem 1rem;
+    padding: 0.85rem 1.4rem; /* Увеличить отступы кнопок */
     border: none;
-    border-radius: 5px;
+    border-radius: 6px; /* Более мягкие углы */
     cursor: pointer;
-    font-size: 0.85rem;
-    transition: background-color 0.2s ease;
+    font-size: 1rem; /* Немного увеличить размер шрифта */
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .project-card .actions .view-button {
-    background-color: #3498db;
+    background-color: #007bff; /* Акцентный синий */
     color: white;
 }
 
 .project-card .actions .view-button:hover {
-    background-color: #2980b9;
+    background-color: #0056b3;
+    transform: translateY(-1px);
 }
 
 .project-card .actions .delete-button {
-    background-color: #e74c3c;
+    background-color: #dc3545; /* Более мягкий красный */
     color: white;
 }
 
 .project-card .actions .delete-button:hover {
-    background-color: #c0392b;
+    background-color: #c82333;
+    transform: translateY(-1px);
 }
 
 .add-project-button {
-    background-color: #27ae60;
+    background-color: #28a745; /* Акцентный зеленый */
     color: white;
-    padding: 0.8rem 1.5rem;
+    padding: 1.1rem 2.2rem; /* Увеличить отступы */
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 1rem;
-    margin-top: 2rem;
-    transition: background-color 0.2s ease;
+    font-size: 1.15rem; /* Немного увеличить размер шрифта */
+    font-weight: 500;
+    margin-top: 3rem; /* Увеличить отступ */
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .add-project-button:hover {
-    background-color: #229a54;
+    background-color: #218838;
+    transform: translateY(-1px);
 }
 
 /* Стили для канбан-доски */
 .board-container {
     display: flex;
-    gap: 1.5rem;
+    gap: 2.5rem; /* Увеличить отступы */
     overflow-x: auto;
-    padding-bottom: 1rem; /* Для скролла */
+    padding-bottom: 1.5rem; /* Для скролла */
 }
 
 .column {
     flex-shrink: 0;
-    width: 300px; /* Фиксированная ширина колонки */
-    background-color: #ebf0f3;
-    border-radius: 8px;
-    padding: 1rem;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    width: 340px; /* Немного увеличить ширину колонки */
+    background-color: #f0f4f7; /* Более светлый фон колонки */
+    border-radius: 10px; /* Более мягкие углы */
+    padding: 1.75rem; /* Увеличить отступы */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); /* Мягкая тень */
     display: flex;
     flex-direction: column;
-    max-height: calc(100vh - 150px); /* Ограничение высоты для скролла */
+    max-height: calc(100vh - 160px); /* Ограничение высоты для скролла */
 }
 
 .column h3 {
     margin-top: 0;
-    color: #2c3e50;
-    font-size: 1.2rem;
-    border-bottom: 2px solid #bdc3c7;
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
+    color: #212529; /* Более темный заголовок */
+    font-size: 1.3rem; /* Немного увеличить размер */
+    font-weight: 600;
+    border-bottom: 1px solid #dee2e6; /* Более тонкая и светлая граница */
+    padding-bottom: 1rem; /* Увеличить отступ */
+    margin-bottom: 1.75rem; /* Увеличить отступ */
 }
 
 .cards-container {
     flex-grow: 1;
     overflow-y: auto; /* Скролл для карточек внутри колонки */
-    padding-right: 5px; /* Для красоты скроллбара */
+    padding-right: 8px; /* Для красоты скроллбара */
 }
 
 .card {
     background-color: #fff;
-    border-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
-    margin-bottom: 0.8rem;
+    border-radius: 8px; /* Более мягкие углы */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Более мягкая тень */
+    padding: 1.4rem; /* Увеличить отступы */
+    margin-bottom: 1.25rem; /* Увеличить отступ */
     cursor: grab;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-5px); /* Более выраженный эффект при наведении */
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 .card.dragging {
-    opacity: 0.5;
-    border: 2px dashed #3498db;
+    opacity: 0.6; /* Немного увеличить прозрачность */
+    border: 2px dashed #007bff; /* Акцентный синий */
 }
 
 .card h4 {
     margin-top: 0;
-    margin-bottom: 0.5rem;
-    color: #34495e;
-    font-size: 1rem;
+    margin-bottom: 0.75rem; /* Немного увеличить отступ */
+    color: #343a40; /* Более темный заголовок */
+    font-size: 1.15rem; /* Немного увеличить размер */
+    font-weight: 500;
 }
 
 .card p {
-    font-size: 0.85rem;
-    color: #7f8c8d;
-    margin-bottom: 0.5rem;
+    font-size: 0.95rem; /* Немного увеличить размер */
+    color: #6c757d; /* Нейтральный цвет текста */
+    margin-bottom: 0.75rem;
+    line-height: 1.4;
 }
 
 .card .meta {
-    font-size: 0.75rem;
-    color: #95a5a6;
+    font-size: 0.85rem; /* Немного увеличить размер */
+    color: #868e96; /* Более нейтральный цвет */
 }
 
 .add-card-button, .add-column-button {
-    background-color: #3498db;
+    background-color: #007bff; /* Акцентный синий */
     color: white;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1.4rem; /* Увеличить отступы */
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 0.9rem;
-    margin-top: 1rem;
-    transition: background-color 0.2s ease;
+    font-size: 1rem;
+    font-weight: 500;
+    margin-top: 1.5rem; /* Увеличить отступ */
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .add-card-button:hover, .add-column-button:hover {
-    background-color: #2980b9;
+    background-color: #0056b3;
+    transform: translateY(-1px);
 }
 
 /* Стили для модальных окон */
@@ -236,7 +255,7 @@ footer {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
+    background-color: rgba(0, 0, 0, 0.5); /* Немного светлее */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -245,11 +264,11 @@ footer {
 
 .modal-content {
     background-color: #fff;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    padding: 3rem; /* Увеличить отступы */
+    border-radius: 10px; /* Более мягкие углы */
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); /* Более мягкая и выраженная тень */
     width: 90%;
-    max-width: 600px;
+    max-width: 700px; /* Немного увеличить максимальную ширину */
     max-height: 90vh;
     overflow-y: auto;
     position: relative;
@@ -257,112 +276,117 @@ footer {
 
 .modal-content h2 {
     margin-top: 0;
-    color: #2c3e50;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 1rem;
-    margin-bottom: 1.5rem;
+    color: #212529; /* Более темный заголовок */
+    font-size: 1.75rem; /* Немного увеличить размер */
+    font-weight: 600;
+    border-bottom: 1px solid #e9ecef; /* Более тонкая и светлая граница */
+    padding-bottom: 1.5rem; /* Увеличить отступ */
+    margin-bottom: 2.25rem; /* Увеличить отступ */
 }
 
 .modal-content form label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-weight: bold;
-    color: #555;
+    margin-bottom: 0.75rem; /* Немного увеличить отступ */
+    font-weight: 500; /* Средний вес шрифта */
+    color: #495057; /* Нейтральный цвет */
 }
 
 .modal-content form input[type="text"],
 .modal-content form textarea,
 .modal-content form select {
-    width: calc(100% - 20px);
-    padding: 0.8rem;
-    margin-bottom: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 1rem;
+    width: calc(100% - 24px); /* Увеличить отступы */
+    padding: 1rem; /* Увеличить отступы */
+    margin-bottom: 1.5rem; /* Увеличить отступ */
+    border: 1px solid #ced4da; /* Более мягкая граница */
+    border-radius: 6px; /* Более мягкие углы */
+    font-size: 1.1rem; /* Немного увеличить размер шрифта */
 }
 
 .modal-content form textarea {
     resize: vertical;
-    min-height: 80px;
+    min-height: 120px; /* Немного увеличить высоту */
 }
 
 .modal-content .modal-actions {
     display: flex;
     justify-content: flex-end;
     gap: 1rem;
-    margin-top: 1.5rem;
+    margin-top: 2.5rem; /* Увеличить отступ */
 }
 
 .modal-content .modal-actions button {
-    padding: 0.8rem 1.5rem;
+    padding: 1rem 2rem; /* Увеличить отступы кнопок */
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.2s ease;
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 .modal-content .modal-actions .save-button {
-    background-color: #27ae60;
+    background-color: #28a745; /* Акцентный зеленый */
     color: white;
 }
 
 .modal-content .modal-actions .save-button:hover {
-    background-color: #229a54;
+    background-color: #218838;
+    transform: translateY(-1px);
 }
 
 .modal-content .modal-actions .cancel-button {
-    background-color: #95a5a6;
+    background-color: #6c757d; /* Нейтральный серый */
     color: white;
 }
 
 .modal-content .modal-actions .cancel-button:hover {
-    background-color: #7f8c8d;
+    background-color: #5a6268;
+    transform: translateY(-1px);
 }
 
 .modal-content .close-button {
     position: absolute;
-    top: 1rem;
-    right: 1rem;
+    top: 1.5rem; /* Немного увеличить отступ */
+    right: 1.5rem; /* Немного увеличить отступ */
     background: none;
     border: none;
-    font-size: 1.5rem;
+    font-size: 2rem; /* Немного увеличить размер */
     cursor: pointer;
-    color: #7f8c8d;
+    color: #adb5bd; /* Более светлый цвет */
 }
 
 .modal-content .close-button:hover {
-    color: #333;
+    color: #495057; /* Более темный цвет при наведении */
 }
 
 /* Стили для истории карточки */
 .card-history-list {
     list-style: none;
     padding: 0;
-    margin-top: 1.5rem;
-    border-top: 1px solid #eee;
-    padding-top: 1rem;
+    margin-top: 2.5rem; /* Увеличить отступ */
+    border-top: 1px solid #e9ecef; /* Более светлая граница */
+    padding-top: 1.75rem; /* Увеличить отступ */
 }
 
 .card-history-list li {
-    background-color: #f9f9f9;
-    border: 1px solid #eee;
-    border-radius: 5px;
-    padding: 0.8rem;
-    margin-bottom: 0.5rem;
-    font-size: 0.9rem;
-    color: #555;
+    background-color: #f8f9fa; /* Более светлый фон */
+    border: 1px solid #dee2e6; /* Более мягкая граница */
+    border-radius: 6px; /* Более мягкие углы */
+    padding: 1.1rem; /* Увеличить отступы */
+    margin-bottom: 1rem; /* Увеличить отступ */
+    font-size: 1rem; /* Немного увеличить размер */
+    color: #495057; /* Нейтральный цвет */
 }
 
 .card-history-list li strong {
-    color: #333;
+    color: #343a40; /* Более темный цвет */
 }
 
 .card-history-list li .timestamp {
-    font-size: 0.75rem;
-    color: #95a5a6;
+    font-size: 0.85rem; /* Немного увеличить размер */
+    color: #868e96; /* Более нейтральный цвет */
     display: block;
-    margin-top: 0.2rem;
+    margin-top: 0.5rem; /* Немного увеличить отступ */
 }
 
 /* Утилиты */

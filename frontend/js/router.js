@@ -12,7 +12,8 @@ const router = {
                 this.navigate(path);
             }
         });
-        this.loadRoute(location.pathname);
+        // Обрабатываем корневой путь, если location.pathname пуст
+        this.loadRoute(location.pathname === '' ? '/' : location.pathname);
     },
     addRoute: function(path, handler) {
         this.routes[path] = handler;
