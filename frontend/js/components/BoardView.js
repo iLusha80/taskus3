@@ -11,9 +11,9 @@ const BoardView = {
             <div class="board-header">
                 <h2 id="board-name">Загрузка доски...</h2>
                 <div class="board-actions">
-                    <button class="add-button add-column-button"><i class="fas fa-plus"></i> Добавить колонку</button>
-                    <button class="add-button add-board-button"><i class="fas fa-plus"></i> Добавить доску</button>
-                    <button class="delete-button delete-board-button"><i class="fas fa-trash-alt"></i> Удалить текущую доску</button>
+                    <button class="add-button add-column-button" title="Добавить колонку"><i class="fas fa-plus"></i></button>
+                    <button class="add-button add-board-button" title="Добавить доску"><i class="fas fa-plus"></i></button>
+                    <button class="delete-button delete-board-button" title="Удалить текущую доску"><i class="fas fa-trash-alt"></i></button>
                 </div>
             </div>
             <div class="board-container"></div>
@@ -68,10 +68,18 @@ const BoardView = {
                         position: currentColumns
                     });
                     if (newColumn && newColumn.id) {
-                        alert(`Колонка "${newColumn.name}" успешно создана!`);
+                        Modal.show({
+                            title: 'Успех',
+                            message: `Колонка "${newColumn.name}" успешно создана!`,
+                            autoClose: true
+                        });
                         router.loadRoute(`/project/${BoardView.currentProjectId}/board/${BoardView.currentBoardId}`);
                     } else {
-                        alert('Ошибка при создании колонки.');
+                        Modal.show({
+                            title: 'Ошибка',
+                            message: 'Ошибка при создании колонки.',
+                            autoClose: true
+                        });
                     }
                 }
             }
@@ -89,10 +97,18 @@ const BoardView = {
                 if (boardName) {
                     const newBoard = await api.createBoard(BoardView.currentProjectId, { name: boardName });
                     if (newBoard && newBoard.id) {
-                        alert(`Доска "${newBoard.name}" успешно создана!`);
+                        Modal.show({
+                            title: 'Успех',
+                            message: `Доска "${newBoard.name}" успешно создана!`,
+                            autoClose: true
+                        });
                         router.navigate(`/project/${BoardView.currentProjectId}/board/${newBoard.id}`);
                     } else {
-                        alert('Ошибка при создании доски.');
+                        Modal.show({
+                            title: 'Ошибка',
+                            message: 'Ошибка при создании доски.',
+                            autoClose: true
+                        });
                     }
                 }
             }
@@ -106,10 +122,18 @@ const BoardView = {
             onConfirm: async () => {
                 const success = await api.deleteBoard(BoardView.currentBoardId);
                 if (success) {
-                    alert('Доска успешно удалена.');
+                    Modal.show({
+                        title: 'Успех',
+                        message: 'Доска успешно удалена.',
+                        autoClose: true
+                    });
                     router.navigate('/');
                 } else {
-                    alert('Ошибка при удалении доски.');
+                    Modal.show({
+                        title: 'Ошибка',
+                        message: 'Ошибка при удалении доски.',
+                        autoClose: true
+                    });
                 }
             },
             isConfirm: true

@@ -6,8 +6,8 @@ const Column = {
         columnElement.innerHTML = `
             <h3>${columnData.name}</h3>
             <div class="cards-container" data-column-id="${columnData.id}"></div>
-            <button class="add-button add-card-button" data-column-id="${columnData.id}"><i class="fas fa-plus"></i> Добавить задачу</button>
-            <button class="delete-button delete-column-button" data-column-id="${columnData.id}"><i class="fas fa-trash-alt"></i> Удалить колонку</button>
+            <button class="add-button add-card-button" data-column-id="${columnData.id}" title="Добавить задачу"><i class="fas fa-plus"></i></button>
+            <button class="delete-button delete-column-button" data-column-id="${columnData.id}" title="Удалить колонку"><i class="fas fa-trash-alt"></i></button>
         `;
 
         const cardsContainer = columnElement.querySelector('.cards-container');
@@ -49,10 +49,18 @@ const Column = {
                         position: document.querySelector(`.cards-container[data-column-id="${columnId}"]`).children.length
                     });
                     if (newCard && newCard.id) {
-                        alert(`Задача "${newCard.title}" успешно создана!`);
+                        Modal.show({
+                            title: 'Успех',
+                            message: `Задача "${newCard.title}" успешно создана!`,
+                            autoClose: true
+                        });
                         router.loadRoute(window.location.pathname); // Перезагружаем доску, чтобы обновить список задач
                     } else {
-                        alert('Ошибка при создании задачи.');
+                        Modal.show({
+                            title: 'Ошибка',
+                            message: 'Ошибка при создании задачи.',
+                            autoClose: true
+                        });
                     }
                 }
             }
@@ -67,10 +75,18 @@ const Column = {
             onConfirm: async () => {
                 const success = await api.deleteColumn(columnId);
                 if (success) {
-                    alert('Колонка успешно удалена.');
+                    Modal.show({
+                        title: 'Успех',
+                        message: 'Колонка успешно удалена.',
+                        autoClose: true
+                    });
                     router.loadRoute(window.location.pathname); // Перезагружаем доску
                 } else {
-                    alert('Ошибка при удалении колонки.');
+                    Modal.show({
+                        title: 'Ошибка',
+                        message: 'Ошибка при удалении колонки.',
+                        autoClose: true
+                    });
                 }
             },
             isConfirm: true

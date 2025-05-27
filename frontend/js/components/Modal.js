@@ -21,7 +21,7 @@ const Modal = {
         });
     },
 
-    show: function({ title, message, fields, onSave, onConfirm, isConfirm = false, onOpen }) {
+    show: function({ title, message, fields, onSave, onConfirm, isConfirm = false, onOpen, autoClose = false }) {
         if (!this.modalOverlay) {
             this.init();
         }
@@ -78,7 +78,7 @@ const Modal = {
                         data[field.id] = formData.get(field.id);
                     });
                     const shouldClose = await this.onSaveCallback(data);
-                    if (shouldClose !== false) { // Если onSaveCallback явно не вернул false, закрываем
+                    if (shouldClose !== false && !autoClose) { // Если onSaveCallback явно не вернул false и не autoClose, закрываем
                         this.close();
                     }
                 }
@@ -87,6 +87,12 @@ const Modal = {
 
         if (this.onOpenCallback) {
             this.onOpenCallback();
+        }
+
+        if (autoClose) {
+            setTimeout(() => {
+                this.close();
+            }, 3000); // Закрыть через 3 секунды
         }
     },
 

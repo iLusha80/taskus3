@@ -14,7 +14,7 @@ header {
     color: #343a40; /* Темный текст для контраста */
     padding: 1.25rem 2.5rem; /* Увеличить отступы */
     display: flex;
-    justify-content: space-between;
+    justify-content: center; /* Центрирование заголовка */
     align-items: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Легкая тень */
 }
@@ -22,6 +22,11 @@ header {
 header h1 {
     margin: 0;
     font-size: 1.8rem;
+}
+
+header h1 a {
+    color: inherit; /* Наследовать цвет от родителя */
+    text-decoration: none; /* Убрать подчеркивание */
 }
 
 nav ul {
@@ -137,23 +142,23 @@ nav ul li a:hover {
 }
 
 .add-button {
-    background-color: #28a745; /* Зеленый для добавления */
+    background-color: #007bff; /* Акцентный синий */
     color: white;
 }
 
 .add-button:hover {
-    background-color: #218838;
+    background-color: #0056b3; /* Темнее синий при наведении */
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .delete-button {
-    background-color: #dc3545; /* Красный для удаления */
+    background-color: #6c757d; /* Нейтральный серый */
     color: white;
 }
 
 .delete-button:hover {
-    background-color: #c82333;
+    background-color: #5a6268; /* Темнее серый при наведении */
     transform: translateY(-1px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
@@ -226,15 +231,15 @@ footer {
 
 /* Стили для канбан-доски */
 .board-container {
-    display: flex;
+    display: grid; /* Использовать Grid для гибкого размещения */
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Адаптивное распределение колонок */
     gap: 2.5rem; /* Увеличить отступы */
-    overflow-x: auto;
     padding-bottom: 1.5rem; /* Для скролла */
 }
 
 .column {
-    flex-shrink: 0;
-    width: 340px; /* Немного увеличить ширину колонки */
+    /* flex-shrink: 0; */ /* Удалить, чтобы колонки могли сжиматься */
+    /* width: 340px; */ /* Удалить, так как grid управляет шириной */
     background-color: #f0f4f7; /* Более светлый фон колонки */
     border-radius: 10px; /* Более мягкие углы */
     padding: 1.75rem; /* Увеличить отступы */
@@ -323,13 +328,23 @@ footer {
 }
 
 /* Стили для кнопок добавления/удаления в колонках и досках */
-.add-card-button, .add-column-button, .add-board-button {
+.add-card-button, .add-column-button, .add-board-button,
+.delete-column-button, .delete-board-button {
     margin-top: 1.5rem;
+    padding: 0.5rem 0.75rem; /* Уменьшить padding для компактности */
+    font-size: 0.9rem; /* Уменьшить размер шрифта */
+    box-shadow: none; /* Убрать тень для компактных кнопок */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
 }
 
-.delete-board-button, .delete-column-button {
-    margin-top: 1rem;
+.add-card-button i, .add-column-button i, .add-board-button i,
+.delete-column-button i, .delete-board-button i {
+    font-size: 1rem; /* Размер иконки */
 }
+
 
 /* Стили для модальных окон */
 .modal-overlay {
