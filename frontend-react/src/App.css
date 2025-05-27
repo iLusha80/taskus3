@@ -9,3 +9,11 @@
     gap: 1rem;
     align-items: center;
 }
+
+main {
+    padding: 24px; /* Add padding around main content */
+}
+
+footer {
+    color: var(--secondary-gray); /* Apply gray color to footer text */
+}

@@ -5,10 +5,8 @@ import { useNotification } from '../contexts/NotificationContext';
 import { useNavigate } from 'react-router-dom'; // Оставляем useNavigate для перехода
 import './ProjectListPage.css';
 
-function ProjectListPage() {
+function ProjectListPage({ handleAddProject, isModalOpen, modalConfig, setIsModalOpen, setModalConfig }) {
   const [projects, setProjects] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalConfig, setModalConfig] = useState({});
   const { showNotification } = useNotification();
   const navigate = useNavigate();
 
@@ -26,34 +24,7 @@ function ProjectListPage() {
     }
   };
 
-  const handleAddProject = () => {
-    setModalConfig({
-      title: 'Создать новый проект',
-      fields: [
-        { id: 'projectName', label: 'Название проекта', type: 'text', required: true },
-        { id: 'projectDescription', label: 'Описание проекта (необязательно)', type: 'textarea', required: false }
-      ],
-      onSave: async (formData) => {
-        const { projectName, projectDescription } = formData;
-        if (projectName) {
-          try {
-            const newProject = await api.createProject({ name: projectName, description: projectDescription });
-            if (newProject && newProject.id) {
-              showNotification(`Проект "${newProject.name}" успешно создан!`, 'success');
-              fetchProjects(); // Перезагружаем список проектов
-            } else {
-              showNotification('Ошибка при создании проекта.', 'error');
-            }
-          } catch (error) {
-            showNotification('Ошибка при создании проекта.', 'error');
-            console.error('Error creating project:', error);
-          }
-        }
-      },
-      onClose: () => setIsModalOpen(false)
-    });
-    setIsModalOpen(true);
-  };
+  // handleAddProject теперь приходит через пропсы
 
   // Удалены функции handleViewProject и handleDeleteProject
 
@@ -100,12 +71,9 @@ function ProjectListPage() {
 
   return (
     <div>
-      {/* Кнопка "Добавить новый проект" перемещена наверх */}
-      <button className="add-button add-project-button" onClick={handleAddProject}>
-        <i className="fas fa-plus"></i> Добавить новый проект
-      </button>
+      {/* Кнопка "Добавить новый проект" удалена отсюда */}
 
-      <h2>Проекты</h2> {/* Заголовок остается, но будет центрирован через CSS */}
+      <h2>Проекты</h2> {/* Заголовок остается */}
       <div className="project-list">
         {projects.length > 0 ? (
           projects.map(project => (
