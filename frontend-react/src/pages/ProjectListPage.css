@@ -15,79 +15,72 @@
     margin-right: 5px;
 }
 
-/* Стили для кнопок добавления */
-.add-button {
-    background-color: #28a745; /* Green */
-    color: white;
-    margin-top: 20px;
+/* Стили для кнопки добавления проекта */
+.add-project-button {
+    background-color: var(--success-green); /* Используем переменную */
+    color: var(--white); /* Используем переменную */
+    margin-bottom: 20px; /* Отступ снизу */
     padding: 12px 20px;
     font-size: 1em;
     border-radius: 8px;
+    display: block; /* Кнопка занимает всю ширину контейнера */
+    width: fit-content; /* Ширина по содержимому */
+    margin-left: auto; /* Центрирование */
+    margin-right: auto; /* Центрирование */
 }
 
-.add-button:hover {
-    background-color: #218838;
+.add-project-button:hover {
+    background-color: var(--success-green-dark); /* Используем переменную */
 }
+
+/* Стили для заголовка */
+h2 {
+    text-align: center; /* Центрирование заголовка */
+    color: var(--dark-gray); /* Используем переменную */
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
 
 /* Стили для списка проектов */
 .project-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: 20px;
-    margin-top: 20px;
+    margin-top: 0; /* Убираем верхний отступ, так как кнопка теперь сверху */
 }
 
 .project-card {
-    background-color: #fff;
-    border: 1px solid #e0e0e0;
+    background-color: var(--white); /* Используем переменную */
+    border: 1px solid var(--border-light); /* Используем переменную */
     border-radius: 10px;
     padding: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 5px var(--shadow-medium); /* Используем переменную */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     transition: transform 0.2s ease-in-out;
+    cursor: pointer; /* Добавляем курсор-указатель */
 }
 
 .project-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 4px 8px var(--shadow-strong); /* Увеличиваем тень при наведении */
 }
 
 .project-card h2 {
-    color: #333;
+    color: var(--dark-gray); /* Используем переменную */
     font-size: 1.5em;
     margin-top: 0;
     margin-bottom: 10px;
+    text-align: left; /* Заголовки карточек не центрируем */
 }
 
 .project-card p {
-    color: #666;
+    color: var(--text-color); /* Используем переменную */
     font-size: 0.95em;
     line-height: 1.5;
     flex-grow: 1; /* Позволяет описанию занимать доступное пространство */
 }
 
-.project-card .actions {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-}
-
-.project-card .view-button {
-    background-color: #007bff;
-    color: white;
-}
-
-.project-card .view-button:hover {
-    background-color: #0056b3;
-}
-
-.project-card .delete-button {
-    background-color: #dc3545;
-    color: white;
-}
-
-.project-card .delete-button:hover {
-    background-color: #c82333;
-}
+/* Удалены стили для .actions, .view-button, .delete-button */

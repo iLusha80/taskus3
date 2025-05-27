@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import api from '../services/api';
 import Modal from '../components/Modal';
 import { useNotification } from '../contexts/NotificationContext';
-import { useNavigate } from 'react-router-dom';
-import './ProjectListPage.css'; // Создадим этот файл позже
+import { useNavigate } from 'react-router-dom'; // Оставляем useNavigate для перехода
+import './ProjectListPage.css';
 
 function ProjectListPage() {
   const [projects, setProjects] = useState([]);
@@ -55,13 +55,16 @@ function ProjectListPage() {
     setIsModalOpen(true);
   };
 
-  const handleViewProject = async (projectId) => {
+  // Удалены функции handleViewProject и handleDeleteProject
+
+  const handleProjectCardClick = async (projectId) => {
     try {
       const boards = await api.getBoards(projectId);
       if (boards && boards.length > 0) {
         navigate(`/project/${projectId}/board/${boards[0].id}`);
       } else {
-        setModalConfig({
+        // Если досок нет, предлагаем создать новую
+         setModalConfig({
           title: 'Создать новую доску',
           message: 'У этого проекта пока нет досок. Создать новую доску?',
           fields: [
@@ -94,56 +97,29 @@ function ProjectListPage() {
     }
   };
 
-  const handleDeleteProject = (projectId) => {
-    setModalConfig({
-      title: 'Подтверждение удаления',
-      message: 'Вы уверены, что хотите удалить этот проект и все связанные с ним доски и задачи? Это действие необратимо.',
-      isConfirm: true,
-      onConfirm: async () => {
-        try {
-          const success = await api.deleteProject(projectId);
-          if (success) {
-            showNotification('Проект успешно удален.', 'success');
-            fetchProjects(); // Перезагружаем список проектов
-          } else {
-            showNotification('Ошибка при удалении проекта.', 'error');
-          }
-        } catch (error) {
-          showNotification('Ошибка при удалении проекта.', 'error');
-          console.error('Error deleting project:', error);
-        }
-      },
-      onClose: () => setIsModalOpen(false)
-    });
-    setIsModalOpen(true);
-  };
 
   return (
     <div>
-      <h2>Проекты</h2>
+      {/* Кнопка "Добавить новый проект" перемещена наверх */}
+      <button className="add-button add-project-button" onClick={handleAddProject}>
+        <i className="fas fa-plus"></i> Добавить новый проект
+      </button>
+
+      <h2>Проекты</h2> {/* Заголовок остается, но будет центрирован через CSS */}
       <div className="project-list">
         {projects.length > 0 ? (
           projects.map(project => (
-            <div key={project.id} className="project-card">
+            // Добавлен onClick для перехода на страницу деталей проекта
+            <div key={project.id} className="project-card" onClick={() => handleProjectCardClick(project.id)}>
               <h2>{project.name}</h2>
               <p>{project.description || 'Нет описания'}</p>
-              <div className="actions">
-                <button className="view-button" onClick={() => handleViewProject(project.id)}>
-                  <i className="fas fa-eye"></i> Открыть доски
-                </button>
-                <button className="delete-button" onClick={() => handleDeleteProject(project.id)}>
-                  <i className="fas fa-trash-alt"></i> Удалить
-                </button>
-              </div>
+              {/* Удалены кнопки "Открыть доски" и "Удалить" */}
             </div>
           ))
         ) : (
           <p>Пока нет проектов. Создайте первый!</p>
         )}
       </div>
-      <button className="add-button add-project-button" onClick={handleAddProject}>
-        <i className="fas fa-plus"></i> Добавить новый проект
-      </button>
 
       {isModalOpen && (
         <Modal

@@ -2,6 +2,7 @@
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css');
 
 :root {
+    /* Light theme variables */
     --primary-blue: #007bff;
     --primary-blue-dark: #0056b3;
     --secondary-gray: #6c757d;
@@ -22,6 +23,28 @@
     --shadow-medium: rgba(0, 0, 0, 0.08);
     --shadow-strong: rgba(0, 0, 0, 0.12);
     --shadow-modal: rgba(0, 0, 0, 0.15);
+
+    /* Dark theme variables (default, will be overridden by body.dark-theme) */
+    --dark-primary-blue: #66b3ff;
+    --dark-primary-blue-dark: #3385cc;
+    --dark-secondary-gray: #b0b0b0;
+    --dark-secondary-gray-dark: #9a9a9a;
+    --dark-light-gray: #3a3a3a;
+    --dark-medium-gray: #4a4a4a;
+    --dark-dark-gray: #e0e0e0;
+    --dark-text-color: #e0e0e0;
+    --dark-background-light: #1a1a1a;
+    --dark-white: #2c2c2c;
+    --dark-border-light: #4a4a4a;
+    --dark-border-medium: #5a5a5a;
+    --dark-success-green: #4CAF50;
+    --dark-success-green-dark: #388E3C;
+    --dark-danger-red: #F44336;
+    --dark-danger-red-dark: #D32F2F;
+    --dark-shadow-light: rgba(255, 255, 255, 0.05);
+    --dark-shadow-medium: rgba(255, 255, 255, 0.08);
+    --dark-shadow-strong: rgba(255, 255, 255, 0.12);
+    --dark-shadow-modal: rgba(255, 255, 255, 0.15);
 }
 
 body {
@@ -29,7 +52,33 @@ body {
     margin: 0;
     padding: 0;
     background-color: var(--background-light);
-    color: var(--dark-gray);
+    color: var(--text-color);
+}
+
+body.dark-theme {
+    background-color: var(--dark-background-light);
+    color: var(--dark-text-color);
+
+    --primary-blue: var(--dark-primary-blue);
+    --primary-blue-dark: var(--dark-primary-blue-dark);
+    --secondary-gray: var(--dark-secondary-gray);
+    --secondary-gray-dark: var(--dark-secondary-gray-dark);
+    --light-gray: var(--dark-light-gray);
+    --medium-gray: var(--dark-medium-gray);
+    --dark-gray: var(--dark-dark-gray);
+    --text-color: var(--dark-text-color);
+    --background-light: var(--dark-background-light);
+    --white: var(--dark-white);
+    --border-light: var(--dark-border-light);
+    --border-medium: var(--dark-border-medium);
+    --success-green: var(--dark-success-green);
+    --success-green-dark: var(--dark-success-green-dark);
+    --danger-red: var(--dark-danger-red);
+    --danger-red-dark: var(--dark-danger-red-dark);
+    --shadow-light: var(--dark-shadow-light);
+    --shadow-medium: var(--dark-shadow-medium);
+    --shadow-strong: var(--dark-shadow-strong);
+    --shadow-modal: var(--dark-shadow-modal);
 }
 
 #root {
@@ -39,13 +88,13 @@ body {
 }
 
 header {
-    background-color: var(--white);
-    color: var(--dark-gray);
+    background-color: var(--white); /* Использует переменную, которая изменится в темной теме */
+    color: var(--dark-gray); /* Использует переменную, которая изменится в темной теме */
     padding: 1.25rem 2.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px var(--shadow-light);
+    box-shadow: 0 2px 4px var(--shadow-light); /* Использует переменную, которая изменится в темной теме */
 }
 
 header h1 {
@@ -68,10 +117,10 @@ main {
 }
 
 footer {
-    background-color: var(--white);
-    color: var(--secondary-gray);
+    background-color: var(--white); /* Использует переменную, которая изменится в темной теме */
+    color: var(--secondary-gray); /* Использует переменную, которая изменится в темной теме */
     text-align: center;
     padding: 1rem;
-    box-shadow: 0 -2px 4px var(--shadow-light);
+    box-shadow: 0 -2px 4px var(--shadow-light); /* Использует переменную, которая изменится в темной теме */
     margin-top: auto;
 }
