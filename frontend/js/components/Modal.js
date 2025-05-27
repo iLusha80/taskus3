@@ -38,6 +38,10 @@ const Modal = {
                     <label for="${field.id}">${field.label}:</label>
                     ${field.type === 'textarea' ?
                         `<textarea id="${field.id}" name="${field.id}" ${field.required ? 'required' : ''}></textarea>` :
+                        field.type === 'select' ?
+                        `<select id="${field.id}" name="${field.id}" ${field.required ? 'required' : ''}>
+                            ${field.options.map(option => `<option value="${option.value}" ${field.defaultValue === option.value ? 'selected' : ''}>${option.text}</option>`).join('')}
+                        </select>` :
                         `<input type="${field.type}" id="${field.id}" name="${field.id}" ${field.required ? 'required' : ''}>`
                     }
                 `;
@@ -52,10 +56,11 @@ const Modal = {
             <div class="modal-body">${formHtml}</div>
             <div class="modal-actions">
                 ${isConfirm ?
-                    `<button class="save-button confirm-button">Подтвердить</button>` :
-                    `<button class="save-button">Сохранить</button>`
+                    `<button class="confirm-button">Подтвердить</button>
+                     <button class="cancel-button">Отмена</button>` :
+                    `<button class="save-button">Сохранить</button>
+                     <button class="cancel-button">Отмена</button>`
                 }
-                <button class="cancel-button">Отмена</button>
             </div>
         `;
         this.modalOverlay.classList.remove('hidden');

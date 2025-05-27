@@ -11,9 +11,10 @@ const BoardView = {
             <div class="board-header">
                 <h2 id="board-name">Загрузка доски...</h2>
                 <div class="board-actions">
-                    <button class="add-button add-column-button" title="Добавить колонку"><i class="fas fa-plus"></i></button>
-                    <button class="add-button add-board-button" title="Добавить доску"><i class="fas fa-plus"></i></button>
-                    <button class="delete-button delete-board-button" title="Удалить текущую доску"><i class="fas fa-trash-alt"></i></button>
+                    <button class="add-button add-card-global-button" title="Добавить задачу">Добавить задачу</button>
+                    <button class="add-button add-column-button" title="Добавить колонку">+</button>
+                    <button class="add-button add-board-button" title="Добавить доску">+</button>
+                    <button class="delete-button delete-board-button" title="Удалить текущую доску">×</button>
                 </div>
             </div>
             <div class="board-container"></div>
@@ -42,6 +43,7 @@ const BoardView = {
             }
 
             // Обработчики событий
+            appRoot.querySelector('.add-card-global-button').addEventListener('click', BoardView.handleAddCardGlobal);
             appRoot.querySelector('.add-column-button').addEventListener('click', BoardView.handleAddColumn);
             appRoot.querySelector('.add-board-button').addEventListener('click', BoardView.handleAddBoard);
             appRoot.querySelector('.delete-board-button').addEventListener('click', BoardView.handleDeleteBoard);
@@ -137,6 +139,54 @@ const BoardView = {
                 }
             },
             isConfirm: true
+        });
+    },
+
+    handleAddCardGlobal: async () => {
+        const columns = await api.getColumns(BoardView.currentBoardId);
+        if (!columns || columns.length === 0) {
+            Modal.show({
+                title: 'Ошибка',
+                message: 'Для добавления задачи необходимо создать хотя бы одну колонку.',
+                autoClose: true
+            });
+            return;
+        }
+
+        const columnOptions = columns.map(col => ({ value: col.id, text: col.name }));
+        const defaultColumnId = columns.length > 0 ? columns[0].id : null;
+
+        Modal.show({
+            title: 'Создать новую задачу',
+            fields: [
+                { id: 'cardTitle', label: 'Название задачи', type: 'text', required: true },
+                { id: 'cardDescription', label: 'Описание задачи (необязательно)', type: 'textarea', required: false },
+                { id: 'columnSelect', label: 'Выбрать колонку', type: 'select', options: columnOptions, defaultValue: defaultColumnId, required: true }
+            ],
+            onSave: async (formData) => {
+                const { cardTitle, cardDescription, columnSelect } = formData;
+                if (cardTitle && columnSelect) {
+                    const newCard = await api.createCard(columnSelect, {
+                        title: cardTitle,
+                        description: cardDescription,
+                        position: document.querySelector(`.cards-container[data-column-id="${columnSelect}"]`).children.length
+                    });
+                    if (newCard && newCard.id) {
+                        Modal.show({
+                            title: 'Успех',
+                            message: `Задача "${newCard.title}" успешно создана!`,
+                            autoClose: true
+                        });
+                        router.loadRoute(window.location.pathname);
+                    } else {
+                        Modal.show({
+                            title: 'Ошибка',
+                            message: 'Ошибка при создании задачи.',
+                            autoClose: true
+                        });
+                    }
+                }
+            }
         });
     }
 };

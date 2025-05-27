@@ -163,10 +163,6 @@ nav ul li a:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-/* Стили для иконок */
-.add-button i, .delete-button i {
-    font-size: 0.9rem;
-}
 
 main {
     max-width: 1200px; /* Центрирование основного содержимого */
@@ -231,15 +227,16 @@ footer {
 
 /* Стили для канбан-доски */
 .board-container {
-    display: grid; /* Использовать Grid для гибкого размещения */
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Адаптивное распределение колонок */
-    gap: 2.5rem; /* Увеличить отступы */
+    display: flex; /* Использовать Flexbox для горизонтального размещения */
+    flex-wrap: nowrap; /* Запретить перенос на новую строку */
+    gap: 2.5rem; /* Отступы между колонками */
     padding-bottom: 1.5rem; /* Для скролла */
+    overflow-x: auto; /* Горизонтальная прокрутка */
 }
 
 .column {
-    /* flex-shrink: 0; */ /* Удалить, чтобы колонки могли сжиматься */
-    /* width: 340px; */ /* Удалить, так как grid управляет шириной */
+    min-width: 270px; /* Фиксированная минимальная ширина колонки */
+    flex-shrink: 0; /* Запретить сжиматься */
     background-color: #f0f4f7; /* Более светлый фон колонки */
     border-radius: 10px; /* Более мягкие углы */
     padding: 1.75rem; /* Увеличить отступы */
@@ -340,10 +337,6 @@ footer {
     gap: 0.25rem;
 }
 
-.add-card-button i, .add-column-button i, .add-board-button i,
-.delete-column-button i, .delete-board-button i {
-    font-size: 1rem; /* Размер иконки */
-}
 
 
 /* Стили для модальных окон */
@@ -422,12 +415,14 @@ footer {
     transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
-.modal-content .modal-actions .save-button {
+.modal-content .modal-actions .save-button,
+.modal-content .modal-actions .confirm-button {
     background-color: #28a745; /* Акцентный зеленый */
     color: white;
 }
 
-.modal-content .modal-actions .save-button:hover {
+.modal-content .modal-actions .save-button:hover,
+.modal-content .modal-actions .confirm-button:hover {
     background-color: #218838;
     transform: translateY(-1px);
 }
@@ -440,6 +435,14 @@ footer {
 .modal-content .modal-actions .cancel-button:hover {
     background-color: #5a6268;
     transform: translateY(-1px);
+}
+
+.modal-content .modal-actions .confirm-button {
+    background-color: #dc3545; /* Красный для подтверждения удаления */
+}
+
+.modal-content .modal-actions .confirm-button:hover {
+    background-color: #c82333;
 }
 
 .modal-content .close-button {

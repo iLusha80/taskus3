@@ -13,7 +13,7 @@ const Card = {
                 Статус: ${cardData.status} | Приоритет: ${cardData.priority}
                 ${cardData.assigned_agent_id ? `| Агент: ${cardData.assigned_agent_id}` : ''}
             </div>
-            <button class="delete-button delete-card-button" data-card-id="${cardData.id}"><i class="fas fa-trash-alt"></i> Удалить</button>
+            <button class="delete-button delete-card-button" data-card-id="${cardData.id}">×</button>
         `;
         console.log('Card rendered:', cardData.id, cardData.title); // Лог для отладки
 
@@ -99,7 +99,7 @@ const Card = {
                     <textarea id="card-metadata" name="metadata">${card.metadata || '{}'}</textarea>
 
                     <button type="submit" class="save-button">Сохранить</button>
-                    <button type="button" class="delete-button delete-card-button-modal"><i class="fas fa-trash-alt"></i> Удалить задачу</button>
+                    <button type="button" class="delete-button delete-card-button-modal">×</button>
                 </form>
                 <h3>История изменений</h3>
                 <div id="card-history-container">Загрузка истории...</div>
