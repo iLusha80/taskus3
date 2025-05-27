@@ -56,10 +56,13 @@ const ProjectList = {
     },
 
     handleProjectActions: async (event) => {
-        const projectId = event.target.dataset.projectId;
+        const targetButton = event.target.closest('.view-button, .delete-button');
+        if (!targetButton) return;
+
+        const projectId = targetButton.dataset.projectId;
         if (!projectId) return;
 
-        if (event.target.classList.contains('view-button')) {
+        if (targetButton.classList.contains('view-button')) {
             // При открытии проекта, переходим на первую доску или предлагаем создать
             const boards = await api.getBoards(projectId);
             if (boards && boards.length > 0) {
@@ -82,11 +85,11 @@ const ProjectList = {
                                 alert('Ошибка при создании доски.');
                             }
                         }
-                    },
-                    isConfirm: true // Это модальное окно подтверждения
+                    }
+                    // isConfirm: true // Это модальное окно подтверждения - УДАЛЕНО
                 });
             }
-        } else if (event.target.classList.contains('delete-button')) {
+        } else if (targetButton.classList.contains('delete-button')) {
             Modal.show({
                 title: 'Подтверждение удаления',
                 message: 'Вы уверены, что хотите удалить этот проект и все связанные с ним доски и задачи? Это действие необратимо.',

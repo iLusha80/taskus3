@@ -46,7 +46,11 @@ const BoardView = {
             appRoot.querySelector('.add-card-global-button').addEventListener('click', BoardView.handleAddCardGlobal);
             appRoot.querySelector('.add-column-button').addEventListener('click', BoardView.handleAddColumn);
             appRoot.querySelector('.add-board-button').addEventListener('click', BoardView.handleAddBoard);
-            appRoot.querySelector('.delete-board-button').addEventListener('click', BoardView.handleDeleteBoard);
+            appRoot.querySelector('.delete-board-button').addEventListener('click', (event) => {
+                if (event.target.closest('.delete-board-button')) {
+                    BoardView.handleDeleteBoard();
+                }
+            });
 
         } catch (error) {
             console.error('Ошибка при загрузке доски:', error);

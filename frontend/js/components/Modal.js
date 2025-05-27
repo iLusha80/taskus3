@@ -68,14 +68,21 @@ const Modal = {
         this.modalContent.querySelector('.close-button').addEventListener('click', this.close.bind(this));
         this.modalContent.querySelector('.cancel-button').addEventListener('click', this.close.bind(this));
 
+        const confirmButton = this.modalContent.querySelector('.confirm-button');
         const saveButton = this.modalContent.querySelector('.save-button');
-        if (saveButton) {
-            saveButton.addEventListener('click', async (e) => {
+
+        if (confirmButton) {
+            confirmButton.addEventListener('click', async (e) => {
                 e.preventDefault();
-                if (isConfirm && this.onConfirmCallback) {
+                if (this.onConfirmCallback) {
                     await this.onConfirmCallback();
                     this.close();
-                } else if (this.onSaveCallback) {
+                }
+            });
+        } else if (saveButton) {
+            saveButton.addEventListener('click', async (e) => {
+                e.preventDefault();
+                if (this.onSaveCallback) {
                     const form = this.modalContent.querySelector('#modal-form');
                     const formData = new FormData(form);
                     const data = {};
@@ -83,7 +90,7 @@ const Modal = {
                         data[field.id] = formData.get(field.id);
                     });
                     const shouldClose = await this.onSaveCallback(data);
-                    if (shouldClose !== false && !autoClose) { // Если onSaveCallback явно не вернул false и не autoClose, закрываем
+                    if (shouldClose !== false && !autoClose) {
                         this.close();
                     }
                 }

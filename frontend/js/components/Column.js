@@ -31,7 +31,12 @@ const Column = {
     },
 
     handleDeleteColumn: async (event) => {
-        const columnId = event.target.dataset.columnId;
+        const targetButton = event.target.closest('.delete-column-button');
+        if (!targetButton) return;
+
+        const columnId = targetButton.dataset.columnId;
+        if (!columnId) return;
+
         Modal.show({
             title: 'Подтверждение удаления',
             message: 'Вы уверены, что хотите удалить эту колонку и все связанные с ней задачи? Это действие необратимо.',

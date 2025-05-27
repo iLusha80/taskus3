@@ -29,8 +29,20 @@ const Card = {
         return cardElement;
     },
 
-    handleDeleteCard: async (event) => {
-        const cardId = event.target.dataset.cardId;
+    handleDeleteCard: async (eventOrCardId) => {
+        let cardId;
+        if (typeof eventOrCardId === 'object' && eventOrCardId.target) {
+            // Если передан объект события, извлекаем cardId из ближайшей кнопки
+            const targetButton = eventOrCardId.target.closest('.delete-card-button, .delete-card-button-modal');
+            if (!targetButton) return;
+            cardId = targetButton.dataset.cardId;
+        } else {
+            // Если передан cardId напрямую
+            cardId = eventOrCardId;
+        }
+
+        if (!cardId) return;
+
         Modal.show({
             title: 'Подтверждение удаления',
             message: 'Вы уверены, что хотите удалить эту задачу? Это действие необратимо.',
@@ -135,7 +147,7 @@ const Card = {
                 // Добавляем обработчик для кнопки удаления внутри модального окна
                 const deleteButtonModal = document.querySelector('.delete-card-button-modal');
                 if (deleteButtonModal) {
-                    deleteButtonModal.addEventListener('click', () => Card.handleDeleteCard(cardId));
+                    deleteButtonModal.addEventListener('click', () => Card.handleDeleteCard(cardId)); // Передаем cardId напрямую
                 }
             }
         });
