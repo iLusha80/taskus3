@@ -2,15 +2,15 @@ import { createGlobalStyle } from 'styled-components';
 
 export const theme = {
   colors: {
-    background: '#FFFFFF',
-    backgroundLight: '#F4F5F7',
-    text: '#282C34',
-    primary: '#007BFF',
-    success: '#28A745',
-    danger: '#DC3545',
-    grayLight: '#E0E0E0',
-    grayMedium: '#CCCCCC',
-    grayDark: '#666666',
+    background: '#F8F9FA', // Very light gray
+    backgroundLight: '#E9ECEF', // Slightly darker light gray
+    text: '#343A40', // Dark gray
+    primary: '#0056B3', // A bit darker blue
+    success: '#218838', // A bit darker green
+    danger: '#C82333', // A bit darker red
+    grayLight: '#DEE2E6', // Light gray
+    grayMedium: '#ADB5BD', // Medium gray
+    grayDark: '#495057', // Darker gray
     white: '#FFFFFF', // Using white explicitly for some elements if needed
   },
   typography: {

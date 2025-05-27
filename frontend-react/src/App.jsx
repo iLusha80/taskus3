@@ -1,19 +1,63 @@
-import React, { useState } from 'react'; // Removed useEffect
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import styled from 'styled-components'; // Import styled
 import ProjectListPage from './pages/ProjectListPage';
 import BoardPage from './pages/BoardPage';
-import Modal from './components/Modal'; // Import Modal
-import { useNotification } from './contexts/NotificationContext'; // Import useNotification
-import api from './services/api'; // Import api
-import './App.css'; // Предполагаем, что стили будут здесь
+import Modal from './components/Modal';
+import { useNotification } from './contexts/NotificationContext';
+import api from './services/api';
+// Removed import './App.css'; // Assuming styles will be handled by styled-components
+
+// Styled components for Header and Footer
+const StyledHeader = styled.header`
+  background-color: ${({ theme }) => theme.colors.backgroundLight};
+  padding: ${({ theme }) => theme.spacing.small} ${({ theme }) => theme.spacing.medium};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.grayLight};
+  box-shadow: ${({ theme }) => theme.boxShadow.small};
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const LogoPlaceholder = styled.div`
+  width: 40px;
+  height: 40px;
+  background-color: ${({ theme }) => theme.colors.primary};
+  margin-right: ${({ theme }) => theme.spacing.small};
+  /* Add logo styling here later */
+`;
+
+const HeaderTitle = styled.h1`
+  margin: 0;
+  font-size: ${({ theme }) => theme.typography.heading2.fontSize};
+  font-weight: ${({ theme }) => theme.typography.heading2.fontWeight};
+
+  a {
+    color: ${({ theme }) => theme.colors.text};
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+`;
+
+const StyledFooter = styled.footer`
+  background-color: ${({ theme }) => theme.colors.backgroundLight};
+  padding: ${({ theme }) => theme.spacing.small} ${({ theme }) => theme.spacing.medium};
+  border-top: 1px solid ${({ theme }) => theme.colors.grayLight};
+  box-shadow: ${({ theme }) => theme.boxShadow.small}; /* Add box-shadow for consistency */
+  text-align: center;
+  color: ${({ theme }) => theme.colors.grayDark};
+  font-size: ${({ theme }) => theme.typography.small.fontSize};
+`;
+
 
 function App() {
-  // Removed theme state and effect
-  const [isModalOpen, setIsModalOpen] = useState(false); // Modal state
-  const [modalConfig, setModalConfig] = useState({}); // Modal config
-  const { showNotification } = useNotification(); // Notification context
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalConfig, setModalConfig] = useState({});
+  const { showNotification } = useNotification();
 
-  // Function to handle adding a new project (moved from ProjectListPage)
   const handleAddProject = () => {
     setModalConfig({
       title: 'Создать новый проект',
@@ -48,18 +92,20 @@ function App() {
 
   return (
     <Router>
-      <div id="root-container"> {/* Обертка для flexbox */}
-        <header>
-          <h1><Link to="/">AI Task Tracker</Link></h1> {/* Изменен текст заголовка */}
+      <div id="root-container" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}> {/* Обертка для flexbox и фиксации футера */}
+        <StyledHeader> {/* Use styled header */}
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <LogoPlaceholder /> {/* Logo placeholder */}
+            <HeaderTitle><Link to="/">AI Task Tracker</Link></HeaderTitle> {/* Styled title */}
+          </div>
           <div className="board-actions">
             {/* Кнопка "Добавить новый проект" */}
             <button className="add-button add-project-button" onClick={handleAddProject}>
               <i className="fas fa-plus"></i> Добавить новый проект
             </button>
-            {/* Removed theme toggle button */}
           </div>
-        </header>
-        <main>
+        </StyledHeader>
+        <main style={{ flexGrow: 1 }}> {/* Основной контент занимает все доступное пространство */}
           <Routes>
             {/* Pass modal related props to ProjectListPage */}
             <Route
@@ -78,9 +124,9 @@ function App() {
             {/* Добавьте другие маршруты по мере необходимости */}
           </Routes>
         </main>
-        <footer>
+        <StyledFooter> {/* Use styled footer */}
           <p>&copy; 2023 Taskus. Все права защищены.</p>
-        </footer>
+        </StyledFooter>
         {/* Modal component */}
         {isModalOpen && (
           <Modal
