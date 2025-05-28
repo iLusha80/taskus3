@@ -63,40 +63,37 @@ function BoardPage() {
     }
   }, [boardId]);
 
-  const fixedColumns = [
-    { id: 'todo', name: 'К выполнению', cards: [] },
-    { id: 'in-progress', name: 'В работе', cards: [] },
-    { id: 'in-review', name: 'На проверке', cards: [] },
-    { id: 'done', name: 'Выполнено', cards: [] },
-  ];
-
-  const fetchColumns = async () => {
+const fetchColumns = async () => {
   try {
-    const data = await api.getColumns(boardId);
-    // Создаем копию фиксированных колонок
-    const updatedFixedColumns = fixedColumns.map(col => ({ ...col, cards: [] }));
-    
-    // Проверяем, что data - это массив перед использованием forEach
-    if (Array.isArray(data)) {
-      data.forEach(backendColumn => {
-        // Проверяем, что у backendColumn есть свойство cards
-        if (backendColumn.cards && Array.isArray(backendColumn.cards)) {
-          backendColumn.cards.forEach(card => {
-            const targetCol = updatedFixedColumns.find(fixedCol => fixedCol.name === backendColumn.name);
-            if (targetCol) {
-              targetCol.cards.push(card);
-            } else {
-              updatedFixedColumns[0].cards.push(card);
-            }
-          });
-        }
-      });
+    let data = await api.getColumns(boardId);
+
+    // Если колонок нет, создаем колонки по умолчанию
+    if (!data || data.length === 0) {
+      showNotification('Колонки не найдены. Создаем колонки по умолчанию.', 'info');
+      const defaultColumnNames = ['К выполнению', 'В работе', 'На проверке', 'Выполнено'];
+      const createdColumns = [];
+      for (let i = 0; i < defaultColumnNames.length; i++) {
+        const newColumn = await api.createColumn(boardId, {
+          name: defaultColumnNames[i],
+          position: i,
+          metadata: '{}'
+        });
+        createdColumns.push(newColumn);
+      }
+      data = createdColumns; // Используем созданные колонки
     }
-    setColumns(updatedFixedColumns);
+    
+    // Убедимся, что каждая колонка имеет массив cards
+    const columnsWithCards = data.map(col => ({
+      ...col,
+      cards: Array.isArray(col.cards) ? col.cards : []
+    }));
+
+    setColumns(columnsWithCards);
   } catch (error) {
     showNotification('Ошибка при загрузке колонок.', 'error');
     console.error('Error fetching columns:', error);
-    setColumns(fixedColumns);
+    setColumns([]); // Устанавливаем пустой массив в случае ошибки
   }
 };
 
@@ -111,18 +108,20 @@ function BoardPage() {
       const { cardTitle, cardDescription } = formData;
       if (cardTitle) {
         try {
-          // Получаем реальные колонки с бэкенда
-          const backendColumns = await api.getColumns(boardId);
-          
-          // Находим первую колонку (или создаем, если нет)
-          let firstColumn = backendColumns[0];
+          // Находим первую колонку из текущего состояния
+          let firstColumn = columns[0];
           if (!firstColumn) {
-            // Если колонок нет, создаем новую
-            firstColumn = await api.createColumn(boardId, {
-              name: 'К выполнению',
-              position: 0,
-              metadata: '{}'
-            });
+            // Если колонок нет в состоянии, запрашиваем их с бэкенда
+            const backendColumns = await api.getColumns(boardId);
+            firstColumn = backendColumns[0];
+            if (!firstColumn) {
+              // Если колонок все еще нет, создаем новую
+              firstColumn = await api.createColumn(boardId, {
+                name: 'К выполнению',
+                position: 0,
+                metadata: '{}'
+              });
+            }
           }
 
           // Создаем карточку в первой колонке
@@ -193,7 +192,7 @@ function BoardPage() {
         <ColumnsContainer>
           <SortableContext items={columns.map(col => col.id)}>
             {columns.map(column => (
-              <Column key={column.id} column={column} />
+              <Column key={column.id} column={column} onCardAdded={fetchColumns} />
             ))}
           </SortableContext>
         </ColumnsContainer>

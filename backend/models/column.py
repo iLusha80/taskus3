@@ -1,5 +1,6 @@
 from database import db
 from datetime import datetime
+from models.card import Card # Импортируем модель Card
 
 class Column(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -10,7 +11,7 @@ class Column(db.Model):
     updated_at = db.Column(db.Text, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), onupdate=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     column_metadata = db.Column(db.Text, default='{}')
 
-    cards = db.relationship('Card', backref='column', lazy=True, cascade="all, delete-orphan")
+    cards = db.relationship('Card', backref='column', lazy='joined', cascade="all, delete-orphan", order_by="Card.position")
 
     def to_dict(self):
         return {
@@ -20,5 +21,6 @@ class Column(db.Model):
             'position': self.position,
             'created_at': self.created_at,
             'updated_at': self.updated_at,
-            'metadata': self.column_metadata
+            'metadata': self.column_metadata,
+            'cards': [card.to_dict() for card in self.cards] # Добавляем карточки
         }

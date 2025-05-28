@@ -70,10 +70,9 @@ const NoCardsMessage = styled.p`
 `;
 
 
-function Column({ column }) {
-  const { id, name } = column;
+function Column({ column, onCardAdded }) { // Добавляем onCardAdded в пропсы
+  const { id, name, cards } = column; // Получаем cards из пропсов
   const { showNotification } = useNotification();
-  const [cards, setCards] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalConfig, setModalConfig] = useState({});
 
@@ -90,24 +89,6 @@ function Column({ column }) {
     transition,
   };
 
-  useEffect(() => {
-  // Проверяем, что id является числом, а не строкой
-  if (id && !isNaN(parseInt(id))) {
-    fetchCards();
-  }
-}, [id]);
-
-const fetchCards = async () => {
-  try {
-    // Используем числовой ID для запроса
-    const data = await api.getCards(parseInt(id));
-    setCards(data);
-  } catch (error) {
-    showNotification('Ошибка при загрузке карточек.', 'error');
-    console.error('Error fetching cards:', error);
-  }
-};
-
   const handleAddCard = () => {
     setModalConfig({
       title: 'Создать новую карточку',
@@ -122,7 +103,10 @@ const fetchCards = async () => {
             const newCard = await api.createCard(id, { title: cardTitle, description: cardDescription, position: cards.length });
             if (newCard && newCard.id) {
               showNotification(`Карточка "${newCard.title}" успешно создана!`, 'success');
-              fetchCards();
+              // Вызываем функцию из родительского компонента для обновления колонок
+              if (onCardAdded) {
+                onCardAdded();
+              }
             } else {
               showNotification('Ошибка при создании карточки.', 'error');
             }
@@ -147,7 +131,9 @@ const fetchCards = async () => {
           const success = await api.deleteCard(cardId);
           if (success) {
             showNotification('Карточка успешно удалена.', 'success');
-            fetchCards();
+            if (onCardAdded) { // Используем onCardAdded для обновления после удаления
+              onCardAdded();
+            }
           } else {
             showNotification('Ошибка при удалении карточки.', 'error');
           }
