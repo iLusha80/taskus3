@@ -7,7 +7,8 @@ const Modal = ({ title, message, fields, onSave, onConfirm, isConfirm, onClose }
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
+      // Проверяем, что клик был именно на overlay (фон модального окна)
+      if (event.target.classList.contains('modal-overlay')) {
         onClose();
       }
     };
