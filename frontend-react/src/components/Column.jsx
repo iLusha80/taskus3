@@ -91,18 +91,22 @@ function Column({ column }) {
   };
 
   useEffect(() => {
+  // Проверяем, что id является числом, а не строкой
+  if (id && !isNaN(parseInt(id))) {
     fetchCards();
-  }, [id]);
+  }
+}, [id]);
 
-  const fetchCards = async () => {
-    try {
-      const data = await api.getCards(id);
-      setCards(data);
-    } catch (error) {
-      showNotification('Ошибка при загрузке карточек.', 'error');
-      console.error('Error fetching cards:', error);
-    }
-  };
+const fetchCards = async () => {
+  try {
+    // Используем числовой ID для запроса
+    const data = await api.getCards(parseInt(id));
+    setCards(data);
+  } catch (error) {
+    showNotification('Ошибка при загрузке карточек.', 'error');
+    console.error('Error fetching cards:', error);
+  }
+};
 
   const handleAddCard = () => {
     setModalConfig({

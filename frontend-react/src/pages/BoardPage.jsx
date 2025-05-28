@@ -71,59 +71,83 @@ function BoardPage() {
   ];
 
   const fetchColumns = async () => {
-    try {
-      const data = await api.getColumns(boardId);
-      // Распределяем существующие карточки по фиксированным колонкам
-      const updatedFixedColumns = fixedColumns.map(col => ({ ...col, cards: [] }));
+  try {
+    const data = await api.getColumns(boardId);
+    // Создаем копию фиксированных колонок
+    const updatedFixedColumns = fixedColumns.map(col => ({ ...col, cards: [] }));
+    
+    // Проверяем, что data - это массив перед использованием forEach
+    if (Array.isArray(data)) {
       data.forEach(backendColumn => {
-        backendColumn.cards.forEach(card => {
-          const targetCol = updatedFixedColumns.find(fixedCol => fixedCol.name === backendColumn.name);
-          if (targetCol) {
-            targetCol.cards.push(card);
-          } else {
-            // Если колонка не найдена, добавляем карточку в первую колонку по умолчанию
-            updatedFixedColumns[0].cards.push(card);
-          }
-        });
+        // Проверяем, что у backendColumn есть свойство cards
+        if (backendColumn.cards && Array.isArray(backendColumn.cards)) {
+          backendColumn.cards.forEach(card => {
+            const targetCol = updatedFixedColumns.find(fixedCol => fixedCol.name === backendColumn.name);
+            if (targetCol) {
+              targetCol.cards.push(card);
+            } else {
+              updatedFixedColumns[0].cards.push(card);
+            }
+          });
+        }
       });
-      setColumns(updatedFixedColumns);
-    } catch (error) {
-      showNotification('Ошибка при загрузке колонок.', 'error');
-      console.error('Error fetching columns:', error);
-      setColumns(fixedColumns); // Устанавливаем фиксированные колонки в случае ошибки
     }
-  };
+    setColumns(updatedFixedColumns);
+  } catch (error) {
+    showNotification('Ошибка при загрузке колонок.', 'error');
+    console.error('Error fetching columns:', error);
+    setColumns(fixedColumns);
+  }
+};
 
   const handleAddCardAtBoardLevel = () => {
-    setModalConfig({
-      title: 'Создать новую задачу',
-      fields: [
-        { id: 'columnId', label: 'Колонка', type: 'select', options: fixedColumns.map(col => ({ value: col.id, label: col.name })), required: true },
-        { id: 'cardTitle', label: 'Название задачи', type: 'text', required: true },
-        { id: 'cardDescription', label: 'Описание задачи (необязательно)', type: 'textarea', required: false }
-      ],
-      onSave: async (formData) => {
-        const { columnId, cardTitle, cardDescription } = formData;
-        if (columnId && cardTitle) {
-          try {
-            const targetColumn = columns.find(col => col.id === columnId);
-            const newCard = await api.createCard(columnId, { title: cardTitle, description: cardDescription, position: targetColumn ? targetColumn.cards.length : 0 });
-            if (newCard && newCard.id) {
-              showNotification(`Задача "${newCard.title}" успешно создана!`, 'success');
-              fetchColumns(); // Перезагрузить колонки, чтобы обновить карточки
-            } else {
-              showNotification('Ошибка при создании задачи.', 'error');
-            }
-          } catch (error) {
-            showNotification('Ошибка при создании задачи.', 'error');
-            console.error('Error creating card:', error);
+  setModalConfig({
+    title: 'Создать новую задачу',
+    fields: [
+      { id: 'cardTitle', label: 'Название задачи', type: 'text', required: true },
+      { id: 'cardDescription', label: 'Описание задачи (необязательно)', type: 'textarea', required: false }
+    ],
+    onSave: async (formData) => {
+      const { cardTitle, cardDescription } = formData;
+      if (cardTitle) {
+        try {
+          // Получаем реальные колонки с бэкенда
+          const backendColumns = await api.getColumns(boardId);
+          
+          // Находим первую колонку (или создаем, если нет)
+          let firstColumn = backendColumns[0];
+          if (!firstColumn) {
+            // Если колонок нет, создаем новую
+            firstColumn = await api.createColumn(boardId, {
+              name: 'К выполнению',
+              position: 0,
+              metadata: '{}'
+            });
           }
+
+          // Создаем карточку в первой колонке
+          const newCard = await api.createCard(firstColumn.id, { 
+            title: cardTitle, 
+            description: cardDescription, 
+            position: 0 
+          });
+          
+          if (newCard && newCard.id) {
+            showNotification(`Задача "${newCard.title}" успешно создана!`, 'success');
+            fetchColumns();
+          } else {
+            showNotification('Ошибка при создании задачи.', 'error');
+          }
+        } catch (error) {
+          showNotification('Ошибка при создании задачи.', 'error');
+          console.error('Error creating card:', error);
         }
-      },
-      onClose: () => setIsModalOpen(false)
-    });
-    setIsModalOpen(true);
-  };
+      }
+    },
+    onClose: () => setIsModalOpen(false)
+  });
+  setIsModalOpen(true);
+};
 
   const handleDragEnd = async (event) => {
     const { active, over } = event;
