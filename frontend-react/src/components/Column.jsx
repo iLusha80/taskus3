@@ -12,13 +12,12 @@ const StyledColumn = styled.div`
   background-color: ${({ theme }) => theme.colors.backgroundLight};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   padding: ${({ theme }) => theme.spacing.medium};
-  width: 300px;
+  flex: 1; /* Allow columns to grow and shrink */
+  min-width: 250px; /* Ensure a minimum readable width for columns */
   max-height: calc(100vh - 180px); /* Keep existing height calculation */
   display: flex;
   flex-direction: column;
   box-shadow: ${({ theme }) => theme.boxShadow.small};
-  flex-shrink: 0;
-  flex-grow: 1;
 `;
 
 const ColumnHeader = styled.div`
