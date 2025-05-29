@@ -11,7 +11,7 @@ import { FaPlus } from 'react-icons/fa'; // Import plus icon
 const StyledColumn = styled.div`
   background-color: ${({ theme }) => theme.colors.backgroundLight};
   border-radius: ${({ theme }) => theme.borderRadius.medium};
-  padding: ${({ theme }) => theme.spacing.medium};
+  padding: ${({ theme }) => theme.spacing.small};
   flex: 1; /* Allow columns to grow and shrink */
   min-width: 250px; /* Ensure a minimum readable width for columns */
   max-height: calc(100vh - 180px); /* Keep existing height calculation */

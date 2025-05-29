@@ -24,7 +24,7 @@ export const theme = {
       fontWeight: '700',
     },
     heading3: {
-      fontSize: '1.5em',
+      fontSize: '1.3em',
       fontWeight: '600',
     },
     body: {
@@ -32,7 +32,7 @@ export const theme = {
       lineHeight: '1.6',
     },
     cardTitle: {
-      fontSize: '1em',
+      fontSize: '0.85em',
       fontWeight: '600',
     },
     small: {

@@ -5,7 +5,7 @@ const StyledCard = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
   border: 1px solid ${({ theme }) => theme.colors.grayLight};
   border-radius: ${({ theme }) => theme.borderRadius.large}; /* Use large border radius */
-  padding: ${({ theme }) => theme.spacing.large};
+  padding: ${({ theme }) => theme.spacing.medium};
   margin-bottom: ${({ theme }) => theme.spacing.small};
   box-shadow: ${({ theme }) => theme.boxShadow.medium}; /* Use medium shadow */
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
