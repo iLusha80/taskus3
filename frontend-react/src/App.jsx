@@ -98,12 +98,6 @@ function App() {
             <LogoPlaceholder /> {/* Logo placeholder */}
             <HeaderTitle><Link to="/">AI Task Tracker</Link></HeaderTitle> {/* Styled title */}
           </div>
-          <div className="board-actions">
-            {/* Кнопка "Добавить новый проект" */}
-            <button className="add-button add-project-button" onClick={handleAddProject}>
-              <i className="fas fa-plus"></i> Добавить новый проект
-            </button>
-          </div>
         </StyledHeader>
         <main style={{ flexGrow: 1 }}> {/* Основной контент занимает все доступное пространство */}
           <Routes>

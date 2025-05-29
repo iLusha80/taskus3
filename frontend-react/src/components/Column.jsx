@@ -36,25 +36,6 @@ const ColumnTitle = styled.h3`
   color: ${({ theme }) => theme.colors.text};
 `;
 
-const AddCardButton = styled.button`
-  background-color: ${({ theme }) => theme.colors.primary};
-  color: ${({ theme }) => theme.colors.white};
-  border: none;
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.2em;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-
-  &:hover {
-    background-color: ${({ theme }) => theme.colors.primary}; /* Use primary color */
-    opacity: 0.9; /* Add slight opacity change on hover */
-  }
-`;
 
 const CardsContainer = styled.div`
   flex-grow: 1;
@@ -88,37 +69,6 @@ function Column({ column, onCardAdded, onEditCard }) { // Добавляем onC
     transition,
   };
 
-  const handleAddCard = () => {
-    setModalConfig({
-      title: 'Создать новую карточку',
-      fields: [
-        { id: 'cardTitle', label: 'Название карточки', type: 'text', required: true },
-        { id: 'cardDescription', label: 'Описание карточки (необязательно)', type: 'textarea', required: false }
-      ],
-      onSave: async (formData) => {
-        const { cardTitle, cardDescription } = formData;
-        if (cardTitle) {
-          try {
-            const newCard = await api.createCard(id, { title: cardTitle, description: cardDescription, position: cards.length });
-            if (newCard && newCard.id) {
-              showNotification(`Карточка "${newCard.title}" успешно создана!`, 'success');
-              // Вызываем функцию из родительского компонента для обновления колонок
-              if (onCardAdded) {
-                onCardAdded();
-              }
-            } else {
-              showNotification('Ошибка при создании карточки.', 'error');
-            }
-          } catch (error) {
-            showNotification('Ошибка при создании карточки.', 'error');
-            console.error('Error creating card:', error);
-          }
-        }
-      },
-      onClose: () => setIsModalOpen(false)
-    });
-    setIsModalOpen(true);
-  };
 
   const handleDeleteCard = async (cardId) => {
     setModalConfig({
@@ -150,9 +100,6 @@ function Column({ column, onCardAdded, onEditCard }) { // Добавляем onC
     <StyledColumn ref={setNodeRef} style={style}>
       <ColumnHeader {...attributes} {...listeners}>
         <ColumnTitle>{name}</ColumnTitle>
-        <AddCardButton onClick={handleAddCard}>
-          <FaPlus /> {/* Use react-icons component */}
-        </AddCardButton>
       </ColumnHeader>
       <CardsContainer>
         {cards.length > 0 ? (
