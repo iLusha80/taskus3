@@ -32,7 +32,7 @@ export const theme = {
       lineHeight: '1.6',
     },
     cardTitle: {
-      fontSize: '0.9em',
+      fontSize: '1em',
       fontWeight: '600',
     },
     small: {
@@ -40,7 +40,7 @@ export const theme = {
       color: '#666666', // Using a specific gray for small text
     },
     xsmall: {
-      fontSize: '0.75em',
+      fontSize: '0.85em',
       color: '#888888',
     },
   },
@@ -48,7 +48,7 @@ export const theme = {
     xsmall: '4px',
     small: '8px',
     medium: '16px',
-    large: '24px',
+    large: '32px',
   },
   borderRadius: {
     small: '4px',
