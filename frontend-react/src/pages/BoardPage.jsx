@@ -236,7 +236,7 @@ const fetchColumns = async () => {
         <BoardTitle></BoardTitle>
         <div style={{ display: 'flex', gap: '10px' }}>
           <StyledButton onClick={handleAddCardAtBoardLevel} small> {/* Use StyledButton with small prop */}
-            <FaPlus /> Добавить новую задачу
+            <FaPlus /> Новая задача
           </StyledButton>
           <AutoRefreshToggle
             autoRefreshEnabled={autoRefreshEnabled}
