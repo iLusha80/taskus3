@@ -21,7 +21,7 @@ def create_card(column_id):
     task_type = data.get('task_type')
     start_date = data.get('start_date')
     due_date = data.get('due_date')
-    position = data.get('position')
+    position = data.get('position', 0) # Устанавливаем значение по умолчанию 0, если не предоставлено
     metadata = data.get('metadata', '{}')
 
     if not title:
