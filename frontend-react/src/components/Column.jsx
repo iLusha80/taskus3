@@ -34,6 +34,7 @@ const ColumnTitle = styled.h3`
   margin: 0;
   font-size: ${({ theme }) => theme.typography.heading3.fontSize};
   color: ${({ theme }) => theme.colors.text};
+  text-align: center; /* Центрируем текст заголовка колонки */
 `;
 
 

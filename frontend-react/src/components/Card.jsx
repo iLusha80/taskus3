@@ -24,6 +24,8 @@ const CardTitle = styled.h4`
   font-size: ${({ theme }) => theme.typography.cardTitle.fontSize}; /* Use body font size for title */
   color: ${({ theme }) => theme.colors.text}; /* Use primary text color */
   font-weight: ${({ theme }) => theme.typography.heading3.fontWeight}; /* Use heading3 weight */
+  padding-bottom: ${({ theme }) => theme.spacing.xsmall}; /* Добавляем отступ снизу для линии */
+  border-bottom: 1px solid ${({ theme }) => theme.colors.grayLight}; /* Тонкая линия */
 `;
 
 const CardDescription = styled.p`
