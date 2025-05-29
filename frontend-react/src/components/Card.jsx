@@ -67,13 +67,10 @@ function Card({ card, onDelete, onEdit }) {
   const { id, title, description } = card;
 
   return (
-    <StyledCard>
+    <StyledCard onClick={() => onEdit(card)}>
       <CardTitle>{title}</CardTitle>
       {description && <CardDescription>{description}</CardDescription>}
       <CardActions>
-        <ActionButton onClick={() => onEdit(card)}>
-          Редактировать
-        </ActionButton>
         <DeleteButton onClick={() => onDelete(id)}>
           <FaTrashAlt />
         </DeleteButton>
