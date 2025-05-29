@@ -22,7 +22,7 @@ const StyledColumn = styled.div`
 
 const ColumnHeader = styled.div`
   display: flex;
-  justify-content: center; /* Center the content */
+  justify-content: space-between;
   align-items: center;
   margin-bottom: ${({ theme }) => theme.spacing.medium};
   padding-bottom: ${({ theme }) => theme.spacing.small};
@@ -34,8 +34,6 @@ const ColumnTitle = styled.h3`
   margin: 0;
   font-size: ${({ theme }) => theme.typography.heading3.fontSize};
   color: ${({ theme }) => theme.colors.text};
-  text-align: center; /* Center the text */
-  width: 100%; /* Ensure it takes full width to center properly */
 `;
 
 

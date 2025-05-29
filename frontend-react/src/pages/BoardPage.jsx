@@ -50,6 +50,7 @@ function BoardPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalConfig, setModalConfig] = useState({});
   const [editingCard, setEditingCard] = useState(null); // Новое состояние для редактируемой карточки
+  const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(false); // Состояние для автообновления
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -62,7 +63,21 @@ function BoardPage() {
     if (boardId) {
       fetchColumns();
     }
-  }, [boardId]);
+  }, [boardId, autoRefreshEnabled]); // Добавляем autoRefreshEnabled в зависимости
+
+  useEffect(() => {
+    let intervalId;
+    if (autoRefreshEnabled) {
+      intervalId = setInterval(() => {
+        fetchColumns();
+      }, 5000); // Обновление каждые 5 секунд
+    }
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [autoRefreshEnabled, boardId]); // Зависимости для эффекта автообновления
 
 const fetchColumns = async () => {
   try {
@@ -218,9 +233,14 @@ const fetchColumns = async () => {
       <BoardNavigation />
       <BoardHeader>
         <BoardTitle></BoardTitle>
-        <StyledButton onClick={handleAddCardAtBoardLevel}> {/* Use StyledButton */}
-          <FaPlus /> Добавить новую задачу
-        </StyledButton>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <StyledButton onClick={handleAddCardAtBoardLevel}> {/* Use StyledButton */}
+            <FaPlus /> Добавить новую задачу
+          </StyledButton>
+          <StyledButton onClick={() => setAutoRefreshEnabled(!autoRefreshEnabled)}>
+            {autoRefreshEnabled ? 'Выключить автообновление' : 'Включить автообновление'}
+          </StyledButton>
+        </div>
       </BoardHeader>
       <DndContext
         sensors={sensors}
