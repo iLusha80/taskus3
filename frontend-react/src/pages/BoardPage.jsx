@@ -234,11 +234,11 @@ const fetchColumns = async () => {
       <BoardHeader>
         <BoardTitle></BoardTitle>
         <div style={{ display: 'flex', gap: '10px' }}>
-          <StyledButton onClick={handleAddCardAtBoardLevel}> {/* Use StyledButton */}
+          <StyledButton onClick={handleAddCardAtBoardLevel} small> {/* Use StyledButton with small prop */}
             <FaPlus /> Добавить новую задачу
           </StyledButton>
-          <StyledButton onClick={() => setAutoRefreshEnabled(!autoRefreshEnabled)}>
-            {autoRefreshEnabled ? 'Выключить автообновление' : 'Включить автообновление'}
+          <StyledButton onClick={() => setAutoRefreshEnabled(!autoRefreshEnabled)} isActive={autoRefreshEnabled}>
+            {autoRefreshEnabled ? 'Автообновление: Вкл' : 'Автообновление: Выкл'}
           </StyledButton>
         </div>
       </BoardHeader>

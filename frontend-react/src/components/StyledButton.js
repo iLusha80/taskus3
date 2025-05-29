@@ -1,21 +1,22 @@
 import styled from 'styled-components';
 
 const StyledButton = styled.button`
-  padding: ${({ theme }) => theme.spacing.small} ${({ theme }) => theme.spacing.medium};
+  padding: ${({ theme, small }) => small ? theme.spacing.extraSmall : theme.spacing.small} ${({ theme, small }) => small ? theme.spacing.small : theme.spacing.medium};
   border: none;
   border-radius: ${({ theme }) => theme.borderRadius.medium};
   cursor: pointer;
-  font-size: 1em;
+  font-size: ${({ small }) => small ? '0.8em' : '1em'};
   transition: background-color 0.3s ease, opacity 0.2s ease;
   display: inline-flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.small};
-  background-color: ${({ theme }) => theme.colors.primary};
-  color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme, isActive }) => isActive ? theme.colors.success : theme.colors.grayMedium};
+  color: ${({ theme, isActive }) => isActive ? theme.colors.white : theme.colors.text};
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.primary};
+    background-color: ${({ theme, isActive }) => isActive ? theme.colors.success : theme.colors.grayDark};
     opacity: 0.9;
+    color: ${({ theme, isActive }) => isActive ? theme.colors.white : theme.colors.white};
   }
 
   &:active {
@@ -29,6 +30,16 @@ const StyledButton = styled.button`
     &:hover {
       background-color: ${({ theme }) => theme.colors.grayDark};
       color: ${({ theme }) => theme.colors.white};
+    }
+  }
+
+  /* Default primary color for other buttons */
+  &:not([isActive]) {
+    background-color: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.white};
+    &:hover {
+      background-color: ${({ theme }) => theme.colors.primary};
+      opacity: 0.9;
     }
   }
 
