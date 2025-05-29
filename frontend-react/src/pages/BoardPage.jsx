@@ -10,6 +10,7 @@ import Column from '../components/Column';
 import Modal from '../components/Modal';
 import StyledButton from '../components/StyledButton'; // Import StyledButton
 import { FaPlus } from 'react-icons/fa'; // Import plus icon
+import AutoRefreshToggle from '../components/AutoRefreshToggle'; // Import AutoRefreshToggle
 
 const BoardPageContainer = styled.div`
   max-width: 1200px;
@@ -63,7 +64,7 @@ function BoardPage() {
     if (boardId) {
       fetchColumns();
     }
-  }, [boardId, autoRefreshEnabled]); // Добавляем autoRefreshEnabled в зависимости
+  }, [boardId]);
 
   useEffect(() => {
     let intervalId;
@@ -237,9 +238,12 @@ const fetchColumns = async () => {
           <StyledButton onClick={handleAddCardAtBoardLevel} small> {/* Use StyledButton with small prop */}
             <FaPlus /> Добавить новую задачу
           </StyledButton>
-          <StyledButton onClick={() => setAutoRefreshEnabled(!autoRefreshEnabled)} isActive={autoRefreshEnabled}>
-            {autoRefreshEnabled ? 'Автообновление: Вкл' : 'Автообновление: Выкл'}
-          </StyledButton>
+          <AutoRefreshToggle
+            autoRefreshEnabled={autoRefreshEnabled}
+            setAutoRefreshEnabled={setAutoRefreshEnabled}
+            refreshInterval={5000} // Фиксированный интервал в мс
+            onRefresh={fetchColumns} // Передаем fetchColumns для сброса таймера
+          />
         </div>
       </BoardHeader>
       <DndContext
