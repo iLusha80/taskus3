@@ -8,7 +8,7 @@ import { FaArrowLeft } from 'react-icons/fa'; // Import left arrow icon
 
 const MainNav = styled.nav`
   background-color: ${({ theme }) => theme.colors.backgroundLight};
-  padding: ${({ theme }) => theme.spacing.small} ${({ theme }) => theme.spacing.medium};
+  padding: ${({ theme }) => theme.spacing.xsmall} ${({ theme }) => theme.spacing.small};
   border-bottom: 1px solid ${({ theme }) => theme.colors.grayLight};
   box-shadow: ${({ theme }) => theme.boxShadow.small};
   margin-bottom: ${({ theme }) => theme.spacing.large};
@@ -31,7 +31,7 @@ const NavItem = styled.li`
 const ProjectNameHeading = styled.h3`
   margin: 0;
   color: ${({ theme }) => theme.colors.text};
-  font-size: ${({ theme }) => theme.typography.heading3.fontSize};
+  font-size: ${({ theme }) => theme.typography.body.fontSize};
   font-weight: ${({ theme }) => theme.typography.heading3.fontWeight};
 `;
 

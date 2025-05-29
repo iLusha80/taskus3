@@ -21,7 +21,7 @@ const BoardHeader = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: ${({ theme }) => theme.spacing.large};
+  margin-bottom: ${({ theme }) => theme.spacing.medium};
 `;
 
 const BoardTitle = styled.h2`
@@ -217,7 +217,7 @@ const fetchColumns = async () => {
     <BoardPageContainer>
       <BoardNavigation />
       <BoardHeader>
-        <BoardTitle>Доска</BoardTitle>
+        <BoardTitle></BoardTitle>
         <StyledButton onClick={handleAddCardAtBoardLevel}> {/* Use StyledButton */}
           <FaPlus /> Добавить новую задачу
         </StyledButton>

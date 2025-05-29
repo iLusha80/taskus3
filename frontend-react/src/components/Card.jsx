@@ -6,7 +6,7 @@ const StyledCard = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
   border: 1px solid ${({ theme }) => theme.colors.grayLight};
   border-radius: ${({ theme }) => theme.borderRadius.large}; /* Use large border radius */
-  padding: ${({ theme }) => theme.spacing.medium};
+  padding: ${({ theme }) => theme.spacing.large};
   margin-bottom: ${({ theme }) => theme.spacing.small};
   box-shadow: ${({ theme }) => theme.boxShadow.medium}; /* Use medium shadow */
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
@@ -21,13 +21,13 @@ const StyledCard = styled.div`
 const CardTitle = styled.h4`
   margin-top: 0;
   margin-bottom: ${({ theme }) => theme.spacing.small};
-  font-size: ${({ theme }) => theme.typography.body.fontSize}; /* Use body font size for title */
+  font-size: ${({ theme }) => theme.typography.cardTitle.fontSize}; /* Use body font size for title */
   color: ${({ theme }) => theme.colors.text}; /* Use primary text color */
   font-weight: ${({ theme }) => theme.typography.heading3.fontWeight}; /* Use heading3 weight */
 `;
 
 const CardDescription = styled.p`
-  font-size: ${({ theme }) => theme.typography.small.fontSize}; /* Use small font size */
+  font-size: ${({ theme }) => theme.typography.xsmall.fontSize}; /* Use small font size */
   color: ${({ theme }) => theme.typography.small.color}; /* Use small text color */
   line-height: ${({ theme }) => theme.typography.body.lineHeight};
   margin-bottom: ${({ theme }) => theme.spacing.small};

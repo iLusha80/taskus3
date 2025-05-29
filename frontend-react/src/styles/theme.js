@@ -31,12 +31,21 @@ export const theme = {
       fontSize: '1em',
       lineHeight: '1.6',
     },
+    cardTitle: {
+      fontSize: '0.9em',
+      fontWeight: '600',
+    },
     small: {
       fontSize: '0.9em',
       color: '#666666', // Using a specific gray for small text
     },
+    xsmall: {
+      fontSize: '0.75em',
+      color: '#888888',
+    },
   },
   spacing: {
+    xsmall: '4px',
     small: '8px',
     medium: '16px',
     large: '24px',
