@@ -49,6 +49,7 @@ function BoardPage() {
   const [columns, setColumns] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalConfig, setModalConfig] = useState({});
+  const [editingCard, setEditingCard] = useState(null); // Новое состояние для редактируемой карточки
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -101,8 +102,8 @@ const fetchColumns = async () => {
   setModalConfig({
     title: 'Создать новую задачу',
     fields: [
-      { id: 'cardTitle', label: 'Название задачи', type: 'text', required: true },
-      { id: 'cardDescription', label: 'Описание задачи (необязательно)', type: 'textarea', required: false }
+      { id: 'cardTitle', label: 'Название задачи', type: 'text', required: true, fullWidth: true },
+      { id: 'cardDescription', label: 'Описание задачи (необязательно)', type: 'textarea', required: false, fullWidth: true }
     ],
     onSave: async (formData) => {
       const { cardTitle, cardDescription } = formData;
@@ -148,6 +149,43 @@ const fetchColumns = async () => {
   setIsModalOpen(true);
 };
 
+ const handleEditCard = (card) => {
+   setEditingCard(card); // Устанавливаем редактируемую карточку
+   setModalConfig({
+     title: `Редактировать задачу: ${card.title}`,
+     fields: [
+       { id: 'title', label: 'Название задачи', type: 'text', required: true, defaultValue: card.title, fullWidth: true },
+       { id: 'description', label: 'Описание задачи', type: 'textarea', required: false, defaultValue: card.description, fullWidth: true },
+       { id: 'status', label: 'Статус', type: 'text', required: false, defaultValue: card.status },
+       { id: 'priority', label: 'Приоритет', type: 'text', required: false, defaultValue: card.priority },
+       { id: 'assigned_agent_id', label: 'Исполнитель (ID)', type: 'text', required: false, defaultValue: card.assigned_agent_id },
+       { id: 'task_type', label: 'Тип задачи', type: 'text', required: false, defaultValue: card.task_type },
+       { id: 'start_date', label: 'Дата начала', type: 'date', required: false, defaultValue: card.start_date ? card.start_date.split('T')[0] : '' },
+       { id: 'due_date', label: 'Дата завершения', type: 'date', required: false, defaultValue: card.due_date ? card.due_date.split('T')[0] : '' },
+       // position и metadata пока не добавляем для редактирования через форму
+     ],
+     onSave: async (formData) => {
+       try {
+         const updatedCard = await api.updateCard(card.id, formData);
+         if (updatedCard) {
+           showNotification(`Задача "${updatedCard.title}" успешно обновлена!`, 'success');
+           fetchColumns(); // Обновляем список колонок и карточек
+         } else {
+           showNotification('Ошибка при обновлении задачи.', 'error');
+         }
+       } catch (error) {
+         showNotification('Ошибка при обновлении задачи.', 'error');
+         console.error('Error updating card:', error);
+       }
+     },
+     onClose: () => {
+       setIsModalOpen(false);
+       setEditingCard(null); // Сбрасываем редактируемую карточку при закрытии
+     }
+   });
+   setIsModalOpen(true);
+ };
+
   const handleDragEnd = async (event) => {
     const { active, over } = event;
 
@@ -192,7 +230,12 @@ const fetchColumns = async () => {
         <ColumnsContainer>
           <SortableContext items={columns.map(col => col.id)}>
             {columns.map(column => (
-              <Column key={column.id} column={column} onCardAdded={fetchColumns} />
+              <Column
+                key={column.id}
+                column={column}
+                onCardAdded={fetchColumns}
+                onEditCard={handleEditCard} // Передаем функцию редактирования
+              />
             ))}
           </SortableContext>
         </ColumnsContainer>
@@ -207,6 +250,7 @@ const fetchColumns = async () => {
           onConfirm={modalConfig.onConfirm}
           isConfirm={modalConfig.isConfirm}
           onClose={modalConfig.onClose}
+          initialData={editingCard || {}} // Передаем пустой объект, если editingCard null
         />
       )}
     </BoardPageContainer>

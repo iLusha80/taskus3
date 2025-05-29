@@ -63,7 +63,7 @@ const DeleteButton = styled(ActionButton)`
 `;
 
 
-function Card({ card, onDelete }) {
+function Card({ card, onDelete, onEdit }) {
   const { id, title, description } = card;
 
   return (
@@ -71,9 +71,11 @@ function Card({ card, onDelete }) {
       <CardTitle>{title}</CardTitle>
       {description && <CardDescription>{description}</CardDescription>}
       <CardActions>
-        {/* Edit button can be added here later */}
+        <ActionButton onClick={() => onEdit(card)}>
+          Редактировать
+        </ActionButton>
         <DeleteButton onClick={() => onDelete(id)}>
-          <FaTrashAlt /> {/* Use react-icons component */}
+          <FaTrashAlt />
         </DeleteButton>
       </CardActions>
     </StyledCard>

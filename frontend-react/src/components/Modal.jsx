@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './Modal.css'; // Создадим этот файл позже
 
-const Modal = ({ title, message, fields, onSave, onConfirm, isConfirm, onClose }) => {
-  const [formData, setFormData] = useState({});
+const Modal = ({ title, message, fields, onSave, onConfirm, isConfirm, onClose, initialData = {} }) => {
+  const [formData, setFormData] = useState(initialData); // Инициализируем formData с initialData
   const modalRef = useRef(null);
+
+  useEffect(() => {
+    setFormData(initialData); // Обновляем formData при изменении initialData
+  }, [initialData]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -41,7 +45,7 @@ const Modal = ({ title, message, fields, onSave, onConfirm, isConfirm, onClose }
         {!isConfirm && fields && (
           <form>
             {fields.map(field => (
-              <div key={field.id} className="form-group">
+              <div key={field.id} className={`form-group ${field.fullWidth ? 'full-width' : ''}`}>
                 <label htmlFor={field.id}>{field.label}</label>
                 {field.type === 'textarea' ? (
                   <textarea
@@ -54,7 +58,7 @@ const Modal = ({ title, message, fields, onSave, onConfirm, isConfirm, onClose }
                   <input
                     type={field.type}
                     id={field.id}
-                    value={formData[field.id] || ''}
+                    value={formData[field.id] !== undefined ? formData[field.id] : ''}
                     onChange={handleChange}
                     required={field.required}
                   />

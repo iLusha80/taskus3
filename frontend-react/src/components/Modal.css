@@ -17,8 +17,10 @@
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     width: 90%;
-    max-width: 500px;
+    max-width: 800px; /* Увеличиваем максимальную ширину */
     position: relative;
+    display: flex; /* Используем flexbox для содержимого модального окна */
+    flex-direction: column; /* Располагаем элементы по вертикали */
 }
 
 .modal-content h2 {
@@ -36,6 +38,16 @@
 
 .form-group {
     margin-bottom: 15px;
+}
+
+.modal-content form {
+    display: grid; /* Используем grid для полей формы */
+    grid-template-columns: 1fr 1fr; /* Две колонки */
+    gap: 15px 20px; /* Отступы между полями */
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1; /* Поле занимает всю ширину */
 }
 
 .form-group label {
@@ -58,6 +70,7 @@
 .form-group textarea {
     resize: vertical;
     min-height: 80px;
+    grid-column: 1 / -1; /* Текстовое поле занимает всю ширину */
 }
 
 .modal-actions {

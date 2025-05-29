@@ -70,7 +70,7 @@ const NoCardsMessage = styled.p`
 `;
 
 
-function Column({ column, onCardAdded }) { // Добавляем onCardAdded в пропсы
+function Column({ column, onCardAdded, onEditCard }) { // Добавляем onCardAdded и onEditCard в пропсы
   const { id, name, cards } = column; // Получаем cards из пропсов
   const { showNotification } = useNotification();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -158,7 +158,12 @@ function Column({ column, onCardAdded }) { // Добавляем onCardAdded в 
       <CardsContainer>
         {cards.length > 0 ? (
           cards.map(card => (
-            <Card key={card.id} card={card} onDelete={handleDeleteCard} />
+            <Card
+              key={card.id}
+              card={card}
+              onDelete={handleDeleteCard}
+              onEdit={onEditCard} // Передаем onEditCard в Card
+            />
           ))
         ) : (
           <NoCardsMessage>Нет карточек</NoCardsMessage>
