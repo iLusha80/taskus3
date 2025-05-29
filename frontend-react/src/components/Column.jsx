@@ -22,7 +22,7 @@ const StyledColumn = styled.div`
 
 const ColumnHeader = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   margin-bottom: ${({ theme }) => theme.spacing.medium};
   padding-bottom: ${({ theme }) => theme.spacing.small};

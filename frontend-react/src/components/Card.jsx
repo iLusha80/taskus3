@@ -1,6 +1,5 @@
 import React from 'react';
 import styled from 'styled-components';
-import { FaTrashAlt } from 'react-icons/fa'; // Import delete icon
 
 const StyledCard = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
@@ -11,6 +10,7 @@ const StyledCard = styled.div`
   box-shadow: ${({ theme }) => theme.boxShadow.medium}; /* Use medium shadow */
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   cursor: grab;
+  position: relative; /* Added for positioning the close button */
 
   &:hover {
     transform: translateY(-5px);
@@ -33,11 +33,22 @@ const CardDescription = styled.p`
   margin-bottom: ${({ theme }) => theme.spacing.small};
 `;
 
-const CardActions = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  gap: ${({ theme }) => theme.spacing.small};
-  margin-top: ${({ theme }) => theme.spacing.small};
+const CloseButton = styled.button`
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: ${({ theme }) => theme.colors.grayDark};
+  font-size: 1.2em;
+  line-height: 1;
+  padding: 0;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.danger};
+  }
 `;
 
 const ActionButton = styled.button`
@@ -53,28 +64,18 @@ const ActionButton = styled.button`
   }
 `;
 
-const DeleteButton = styled(ActionButton)`
-  color: ${({ theme }) => theme.colors.danger}; /* Use danger color for delete button */
-
-  &:hover {
-    color: ${({ theme }) => theme.colors.danger}; /* Keep danger color on hover for clarity */
-    opacity: 0.8; /* Add slight opacity change on hover */
-  }
-`;
-
-
 function Card({ card, onDelete, onEdit }) {
   const { id, title, description } = card;
 
   return (
-    <StyledCard onClick={() => onEdit(card)}>
-      <CardTitle>{title}</CardTitle>
-      {description && <CardDescription>{description}</CardDescription>}
-      <CardActions>
-        <DeleteButton onClick={() => onDelete(id)}>
-          <FaTrashAlt />
-        </DeleteButton>
-      </CardActions>
+    <StyledCard>
+      <CloseButton onClick={(e) => { e.stopPropagation(); onDelete(id); }}>
+        &times;
+      </CloseButton>
+      <div onClick={() => onEdit(card)}>
+        <CardTitle>{title}</CardTitle>
+        {description && <CardDescription>{description}</CardDescription>}
+      </div>
     </StyledCard>
   );
 }
