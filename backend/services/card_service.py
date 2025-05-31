@@ -5,8 +5,22 @@ from models.history import CardHistory
 from datetime import datetime
 
 class CardService:
+    """Сервис для управления операциями, связанными с карточками.
+
+    Предоставляет статические методы для взаимодействия с моделями Card и CardHistory в базе данных.
+    """
     @staticmethod
     def get_cards_by_column(column_id):
+        """Получает список карточек для указанной колонки.
+
+        Карточки сортируются по их позиции.
+
+        Args:
+            column_id (int): ID колонки.
+
+        Returns:
+            list[Card] or None: Список объектов Card, если колонка найдена, иначе None.
+        """
         column = Column.query.get(column_id)
         if not column:
             return None
@@ -14,10 +28,38 @@ class CardService:
 
     @staticmethod
     def get_card_by_id(card_id):
+        """Получает карточку по ее ID.
+
+        Args:
+            card_id (int): ID карточки.
+
+        Returns:
+            Card or None: Объект Card, если найден, иначе None.
+        """
         return Card.query.get(card_id)
 
     @staticmethod
     def create_card(column_id, title, description, status, priority, assigned_agent_id, task_type, start_date, due_date, position, metadata):
+        """Создает новую карточку в базе данных.
+
+        Также добавляет запись в историю о создании карточки.
+
+        Args:
+            column_id (int): ID колонки, к которой будет принадлежать карточка.
+            title (str): Название карточки.
+            description (str): Описание карточки.
+            status (str): Статус карточки (по умолчанию 'open').
+            priority (str): Приоритет карточки (по умолчанию 'medium').
+            assigned_agent_id (str): ID назначенного агента (необязательно).
+            task_type (str): Тип задачи (необязательно).
+            start_date (str): Дата начала задачи (необязательно, формат YYYY-MM-DD).
+            due_date (str): Дата выполнения задачи (необязательно, формат YYYY-MM-DD).
+            position (int): Позиция карточки в колонке (по умолчанию 0).
+            metadata (str): Дополнительные метаданные карточки в формате JSON-строки.
+
+        Returns:
+            Card or None: Созданный объект Card, если колонка найдена, иначе None.
+        """
         column = Column.query.get(column_id)
         if not column:
             return None
@@ -50,17 +92,28 @@ class CardService:
 
     @staticmethod
     def update_card(card_id, data):
+        """Обновляет существующую карточку в базе данных.
+
+        Отслеживает изменения в 'column_id' и 'status' и добавляет соответствующие записи в историю.
+
+        Args:
+            card_id (int): ID карточки для обновления.
+            data (dict): Словарь, содержащий поля для обновления.
+
+        Returns:
+            Card or None: Обновленный объект Card, если найден, иначе None.
+        """
         card = Card.query.get(card_id)
         if not card:
             return None
-
+ 
         history_entries = []
-
+ 
         # Сохраняем старые значения для истории
         old_column_id = card.column_id
         old_status = card.status
         old_updated_at = card.updated_at
-
+ 
         if 'column_id' in data and data['column_id'] != old_column_id:
             card.column_id = data['column_id']
             history_entries.append({
@@ -99,7 +152,7 @@ class CardService:
             card.metadata = data['metadata']
         
         db.session.commit()
-
+ 
         # Добавляем записи в историю
         for entry in history_entries:
             history_record = CardHistory(
@@ -113,11 +166,19 @@ class CardService:
             )
             db.session.add(history_record)
         db.session.commit()
-
+ 
         return card
 
     @staticmethod
     def delete_card(card_id):
+        """Удаляет карточку из базы данных.
+
+        Args:
+            card_id (int): ID карточки для удаления.
+
+        Returns:
+            bool: True, если карточка успешно удалена, иначе False.
+        """
         card = Card.query.get(card_id)
         if not card:
             return False
@@ -127,6 +188,16 @@ class CardService:
 
     @staticmethod
     def get_card_history(card_id):
+        """Получает историю изменений для указанной карточки.
+
+        История сортируется по временной метке.
+
+        Args:
+            card_id (int): ID карточки.
+
+        Returns:
+            list[CardHistory] or None: Список объектов CardHistory, если карточка найдена, иначе None.
+        """
         card = Card.query.get(card_id)
         if not card:
             return None

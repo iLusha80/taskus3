@@ -2,9 +2,22 @@ from flask import Blueprint, request, jsonify
 from services.card_service import CardService
 
 cards_bp = Blueprint('cards', __name__, url_prefix='/api/v1')
+"""Блюпринт для управления карточками.
+
+Предоставляет эндпоинты для создания, получения, обновления и удаления карточек,
+а также для получения истории изменений карточек.
+"""
 
 @cards_bp.route('/columns/<int:column_id>/cards', methods=['GET'])
 def get_cards(column_id):
+    """Получает список карточек для указанной колонки.
+
+    Args:
+        column_id (int): ID колонки.
+
+    Returns:
+        flask.Response: JSON-ответ, содержащий список карточек, или сообщение об ошибке.
+    """
     cards = CardService.get_cards_by_column(column_id)
     if cards is None:
         return jsonify({'error': 'Column not found'}), 404
@@ -12,6 +25,16 @@ def get_cards(column_id):
 
 @cards_bp.route('/columns/<int:column_id>/cards', methods=['POST'])
 def create_card(column_id):
+    """Создает новую карточку для указанной колонки.
+
+    Принимает данные карточки в формате JSON.
+
+    Args:
+        column_id (int): ID колонки, к которой будет принадлежать карточка.
+
+    Returns:
+        flask.Response: JSON-ответ, содержащий новую карточку, или сообщение об ошибке.
+    """
     data = request.get_json()
     title = data.get('title')
     description = data.get('description')
@@ -34,6 +57,14 @@ def create_card(column_id):
 
 @cards_bp.route('/cards/<int:card_id>', methods=['GET'])
 def get_card(card_id):
+    """Получает карточку по ее ID.
+
+    Args:
+        card_id (int): ID карточки.
+
+    Returns:
+        flask.Response: JSON-ответ, содержащий карточку, или сообщение об ошибке, если карточка не найдена.
+    """
     card = CardService.get_card_by_id(card_id)
     if card is None:
         return jsonify({'error': 'Card not found'}), 404
@@ -41,6 +72,16 @@ def get_card(card_id):
 
 @cards_bp.route('/cards/<int:card_id>', methods=['PUT'])
 def update_card(card_id):
+    """Обновляет существующую карточку.
+
+    Принимает ID карточки и данные для обновления в формате JSON.
+
+    Args:
+        card_id (int): ID карточки.
+
+    Returns:
+        flask.Response: JSON-ответ, содержащий обновленную карточку, или сообщение об ошибке.
+    """
     data = request.get_json()
     updated_card = CardService.update_card(card_id, data)
     if updated_card is None:
@@ -51,12 +92,28 @@ def update_card(card_id):
 
 @cards_bp.route('/cards/<int:card_id>', methods=['DELETE'])
 def delete_card(card_id):
+    """Удаляет карточку по ее ID.
+
+    Args:
+        card_id (int): ID карточки.
+
+    Returns:
+        flask.Response: Пустой ответ со статусом 204 при успешном удалении, или сообщение об ошибке.
+    """
     if not CardService.delete_card(card_id):
         return jsonify({'error': 'Card not found'}), 404
     return '', 204
 
 @cards_bp.route('/cards/<int:card_id>/history', methods=['GET'])
 def get_card_history(card_id):
+    """Получает историю изменений для указанной карточки.
+
+    Args:
+        card_id (int): ID карточки.
+
+    Returns:
+        flask.Response: JSON-ответ, содержащий историю изменений карточки, или сообщение об ошибке.
+    """
     history = CardService.get_card_history(card_id)
     if history is None:
         return jsonify({'error': 'Card not found'}), 404

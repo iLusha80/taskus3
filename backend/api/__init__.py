@@ -1,6 +1,11 @@
 from flask import Blueprint
 
 def register_blueprints(app):
+    """Регистрирует все блюпринты API в приложении Flask.
+
+    Args:
+        app (Flask): Экземпляр приложения Flask.
+    """
     from .projects import projects_bp
     from .boards import boards_bp
     from .columns import columns_bp

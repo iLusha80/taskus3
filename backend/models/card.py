@@ -2,6 +2,25 @@ from database import db
 from datetime import datetime
 
 class Card(db.Model):
+    """Модель данных для карточки задачи.
+
+    Атрибуты:
+        id (int): Уникальный идентификатор карточки (первичный ключ).
+        column_id (int): ID колонки, к которой принадлежит карточка (внешний ключ).
+        title (str): Название карточки.
+        description (str): Описание карточки.
+        status (str): Текущий статус карточки (например, 'open', 'in progress', 'closed').
+        priority (str): Приоритет карточки (например, 'low', 'medium', 'high').
+        assigned_agent_id (str): ID назначенного агента (необязательно).
+        task_type (str): Тип задачи (например, 'bug', 'feature', 'task').
+        start_date (str): Дата начала задачи.
+        due_date (str): Дата выполнения задачи.
+        position (int): Позиция карточки в колонке.
+        created_at (str): Дата и время создания карточки.
+        updated_at (str): Дата и время последнего обновления карточки.
+        card_metadata (str): Дополнительные метаданные карточки в формате JSON-строки.
+        history (relationship): Связь с моделью CardHistory (один-ко-многим).
+    """
     id = db.Column(db.Integer, primary_key=True)
     column_id = db.Column(db.Integer, db.ForeignKey('column.id', ondelete='CASCADE'), nullable=False)
     title = db.Column(db.Text, nullable=False)
@@ -20,6 +39,11 @@ class Card(db.Model):
     history = db.relationship('CardHistory', backref='card', lazy=True, cascade="all, delete-orphan")
 
     def to_dict(self):
+        """Преобразует объект Card в словарь.
+
+        Returns:
+            dict: Словарь, представляющий карточку.
+        """
         return {
             'id': self.id,
             'column_id': self.column_id,

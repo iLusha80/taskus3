@@ -2,9 +2,21 @@ from flask import Blueprint, request, jsonify
 from services.column_service import ColumnService
 
 columns_bp = Blueprint('columns', __name__, url_prefix='/api/v1')
+"""Блюпринт для управления колонками.
+
+Предоставляет эндпоинты для создания, получения, обновления и удаления колонок.
+"""
 
 @columns_bp.route('/boards/<int:board_id>/columns', methods=['GET'])
 def get_columns(board_id):
+    """Получает список колонок для указанной доски.
+
+    Args:
+        board_id (int): ID доски.
+
+    Returns:
+        flask.Response: JSON-ответ, содержащий список колонок, или сообщение об ошибке.
+    """
     columns = ColumnService.get_columns_by_board(board_id)
     if columns is None:
         return jsonify({'error': 'Board not found'}), 404
@@ -12,6 +24,16 @@ def get_columns(board_id):
 
 @columns_bp.route('/boards/<int:board_id>/columns', methods=['POST'])
 def create_column(board_id):
+    """Создает новую колонку для указанной доски.
+
+    Принимает данные колонки в формате JSON.
+
+    Args:
+        board_id (int): ID доски, к которой будет принадлежать колонка.
+
+    Returns:
+        flask.Response: JSON-ответ, содержащий новую колонку, или сообщение об ошибке.
+    """
     data = request.get_json()
     name = data.get('name')
     position = data.get('position')
@@ -27,6 +49,14 @@ def create_column(board_id):
 
 @columns_bp.route('/columns/<int:column_id>', methods=['GET'])
 def get_column(column_id):
+    """Получает колонку по ее ID.
+
+    Args:
+        column_id (int): ID колонки.
+
+    Returns:
+        flask.Response: JSON-ответ, содержащий колонку, или сообщение об ошибке, если колонка не найдена.
+    """
     column = ColumnService.get_column_by_id(column_id)
     if column is None:
         return jsonify({'error': 'Column not found'}), 404
@@ -34,6 +64,16 @@ def get_column(column_id):
 
 @columns_bp.route('/columns/<int:column_id>', methods=['PUT'])
 def update_column(column_id):
+    """Обновляет существующую колонку.
+
+    Принимает ID колонки и данные для обновления в формате JSON.
+
+    Args:
+        column_id (int): ID колонки.
+
+    Returns:
+        flask.Response: JSON-ответ, содержащий обновленную колонку, или сообщение об ошибке.
+    """
     data = request.get_json()
     updated_column = ColumnService.update_column(column_id, data)
     if updated_column is None:
@@ -44,6 +84,14 @@ def update_column(column_id):
 
 @columns_bp.route('/columns/<int:column_id>', methods=['DELETE'])
 def delete_column(column_id):
+    """Удаляет колонку по ее ID.
+
+    Args:
+        column_id (int): ID колонки.
+
+    Returns:
+        flask.Response: Пустой ответ со статусом 204 при успешном удалении, или сообщение об ошибке.
+    """
     if not ColumnService.delete_column(column_id):
         return jsonify({'error': 'Column not found'}), 404
     return '', 204
