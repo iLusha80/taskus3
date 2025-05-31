@@ -4,18 +4,18 @@ import styled from 'styled-components';
 const ToggleContainer = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 5px; /* Уменьшено расстояние */
   background-color: ${({ theme }) => theme.colors.backgroundLight};
-  border-radius: ${({ theme }) => theme.borderRadius.medium};
-  padding: 8px 12px;
+  border-radius: ${({ theme }) => theme.borderRadius.small}; /* Уменьшен радиус */
+  padding: 4px 8px; /* Уменьшен padding */
   box-shadow: ${({ theme }) => theme.boxShadow.small};
 `;
 
 const ToggleSwitch = styled.label`
   position: relative;
   display: inline-block;
-  width: 40px;
-  height: 24px;
+  width: 30px; /* Уменьшен размер переключателя */
+  height: 18px; /* Уменьшен размер переключателя */
 `;
 
 const ToggleInput = styled.input`
@@ -32,7 +32,7 @@ const ToggleInput = styled.input`
   }
 
   &:checked + span:before {
-    transform: translateX(16px);
+    transform: translateX(12px); /* Смещение ползунка */
   }
 `;
 
@@ -50,10 +50,10 @@ const ToggleSlider = styled.span`
   &:before {
     position: absolute;
     content: "";
-    height: 16px;
-    width: 16px;
-    left: 4px;
-    bottom: 4px;
+    height: 12px; /* Уменьшен размер ползунка */
+    width: 12px; /* Уменьшен размер ползунка */
+    left: 3px; /* Смещение ползунка */
+    bottom: 3px; /* Смещение ползунка */
     background-color: white;
     transition: .4s;
     border-radius: 50%;
@@ -62,8 +62,8 @@ const ToggleSlider = styled.span`
 
 const TimerText = styled.span`
   color: ${({ theme }) => theme.colors.text};
-  font-size: ${({ theme }) => theme.typography.body.fontSize};
-  min-width: 120px; /* Чтобы текст не прыгал при изменении */
+  font-size: 0.85em; /* Уменьшен размер шрифта */
+  min-width: 60px; /* Уменьшен min-width */
   text-align: right;
 `;
 
@@ -109,7 +109,7 @@ function AutoRefreshToggle({ autoRefreshEnabled, setAutoRefreshEnabled, refreshI
         <ToggleSlider />
       </ToggleSwitch>
       <TimerText>
-        {autoRefreshEnabled ? `Обновление через: ${countdown}с` : 'Автообновление: Выкл'}
+        {autoRefreshEnabled ? `${countdown}с` : 'Выкл'}
       </TimerText>
     </ToggleContainer>
   );
