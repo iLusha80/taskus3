@@ -10,34 +10,40 @@ import api from './services/api';
 
 // Styled components for Header and Footer
 const StyledHeader = styled.header`
-  background-color: ${({ theme }) => theme.colors.backgroundLight};
-  padding: ${({ theme }) => theme.spacing.small} ${({ theme }) => theme.spacing.medium};
-  border-bottom: 1px solid ${({ theme }) => theme.colors.grayLight};
-  box-shadow: ${({ theme }) => theme.boxShadow.small};
+  background-color: ${({ theme }) => theme.colors.primary}; /* Более темный фон */
+  padding: ${({ theme }) => theme.spacing.medium} ${({ theme }) => theme.spacing.large}; /* Увеличенный отступ */
+  border-bottom: 2px solid ${({ theme }) => theme.colors.grayDark}; /* Более выраженная граница */
+  box-shadow: ${({ theme }) => theme.boxShadow.medium}; /* Усиленная тень */
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 60px; /* Фиксированная высота */
+  position: sticky; /* Закрепленный хедер */
+  top: 0;
+  z-index: 1000; /* Поверх другого контента */
 `;
 
 const LogoPlaceholder = styled.div`
   width: 40px;
   height: 40px;
-  background-color: ${({ theme }) => theme.colors.primary};
+  background-color: ${({ theme }) => theme.colors.white}; /* Белый фон для логотипа */
   margin-right: ${({ theme }) => theme.spacing.small};
+  border-radius: ${({ theme }) => theme.borderRadius.small}; /* Скругленные углы */
   /* Add logo styling here later */
 `;
 
 const HeaderTitle = styled.h1`
   margin: 0;
-  font-size: ${({ theme }) => theme.typography.heading2.fontSize};
-  font-weight: ${({ theme }) => theme.typography.heading2.fontWeight};
+  font-size: ${({ theme }) => theme.typography.heading1.fontSize}; /* Более крупный заголовок */
+  font-weight: ${({ theme }) => theme.typography.heading1.fontWeight};
 
   a {
-    color: ${({ theme }) => theme.colors.text};
+    color: ${({ theme }) => theme.colors.white}; /* Белый цвет текста для контраста */
     text-decoration: none;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Тень для текста */
 
     &:hover {
-      text-decoration: none;
+      text-decoration: underline; /* Подчеркивание при наведении */
     }
   }
 `;
