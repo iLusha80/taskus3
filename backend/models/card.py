@@ -9,7 +9,6 @@ class Card(db.Model):
         column_id (int): ID колонки, к которой принадлежит карточка (внешний ключ).
         title (str): Название карточки.
         description (str): Описание карточки.
-        status (str): Текущий статус карточки (например, 'open', 'in progress', 'closed').
         priority (str): Приоритет карточки (например, 'low', 'medium', 'high').
         assigned_agent_id (str): ID назначенного агента (необязательно).
         task_type (str): Тип задачи (например, 'bug', 'feature', 'task').
@@ -26,7 +25,6 @@ class Card(db.Model):
     milestone_id = db.Column(db.Integer, db.ForeignKey('milestone.id', ondelete='SET NULL'), nullable=True)
     title = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text)
-    status = db.Column(db.Text, default='open')
     priority = db.Column(db.Text, default='medium')
     assigned_agent_id = db.Column(db.Text)
     task_type = db.Column(db.Text)
@@ -51,7 +49,6 @@ class Card(db.Model):
             'milestone_id': self.milestone_id,
             'title': self.title,
             'description': self.description,
-            'status': self.status,
             'priority': self.priority,
             'assigned_agent_id': self.assigned_agent_id,
             'task_type': self.task_type,

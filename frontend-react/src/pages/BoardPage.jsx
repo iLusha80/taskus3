@@ -179,7 +179,15 @@ const fetchColumns = async () => {
      fields: [
        { id: 'title', label: 'Название задачи', type: 'text', required: true, defaultValue: card.title, fullWidth: true },
        { id: 'description', label: 'Описание задачи', type: 'textarea', required: false, defaultValue: card.description, fullWidth: true },
-       { id: 'status', label: 'Статус', type: 'text', required: false, defaultValue: card.status },
+       {
+         id: 'column_id',
+         label: 'Колонка',
+         type: 'select',
+         options: columns.map(col => ({ value: col.id, label: col.name })),
+         required: true,
+         fullWidth: true,
+         defaultValue: card.column_id
+       },
        { id: 'priority', label: 'Приоритет', type: 'text', required: false, defaultValue: card.priority },
        { id: 'assigned_agent_id', label: 'Исполнитель (ID)', type: 'text', required: false, defaultValue: card.assigned_agent_id },
        { id: 'task_type', label: 'Тип задачи', type: 'text', required: false, defaultValue: card.task_type },
@@ -236,10 +244,20 @@ const fetchColumns = async () => {
         showNotification('Порядок колонок обновлен (требуется бэкенд-реализация).', 'info');
       } else {
         // Logic for moving cards between columns
-        // This will be more complex and involve updating card's columnId
-        // For now, we'll just log it.
-        showNotification('Перемещение карточек между колонками пока не реализовано.', 'info');
-        console.log(`Card ${active.id} moved from column ${activeColumn?.id} to column ${overColumn?.id}`);
+        const activeCard = activeColumn.cards.find(card => card.id === active.id);
+        if (activeCard && overColumn) {
+          const newColumnId = overColumn.id;
+          const newPosition = overColumn.cards.length; // Добавляем в конец новой колонки
+
+          try {
+            await api.updateCard(activeCard.id, { column_id: newColumnId, position: newPosition });
+            showNotification(`Карточка "${activeCard.title}" перемещена в колонку "${overColumn.name}"`, 'success');
+            fetchColumns(); // Обновляем данные после перемещения
+          } catch (error) {
+            showNotification('Ошибка при перемещении карточки.', 'error');
+            console.error('Error moving card:', error);
+          }
+        }
       }
     }
   };

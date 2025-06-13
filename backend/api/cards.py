@@ -39,7 +39,6 @@ def create_card(column_id):
     data = request.get_json()
     title = data.get('title')
     description = data.get('description')
-    status = data.get('status', 'open')
     priority = data.get('priority', 'medium')
     assigned_agent_id = data.get('assigned_agent_id')
     task_type = data.get('task_type')
@@ -52,7 +51,7 @@ def create_card(column_id):
     if not title:
         return jsonify({'error': 'Title is required'}), 400
 
-    new_card = CardService.create_card(column_id, title, description, status, priority, assigned_agent_id, task_type, start_date, due_date, position, metadata, milestone_id)
+    new_card = CardService.create_card(column_id, title, description, priority, assigned_agent_id, task_type, start_date, due_date, position, metadata, milestone_id)
     if new_card is None:
         return jsonify({'error': 'Column not found'}), 404
     return jsonify(new_card.to_dict()), 201
