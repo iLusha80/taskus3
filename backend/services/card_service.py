@@ -42,6 +42,20 @@ class CardService:
         return Card.query.get(card_id)
 
     @staticmethod
+    def get_cards_by_milestone(milestone_id):
+        """Получает список карточек для указанного этапа.
+
+        Карточки сортируются по их позиции.
+
+        Args:
+            milestone_id (int): ID этапа.
+
+        Returns:
+            list[Card]: Список объектов Card.
+        """
+        return Card.query.filter_by(milestone_id=milestone_id).order_by(Card.position).all()
+
+    @staticmethod
     def create_card(column_id, title, description, status, priority, assigned_agent_id, task_type, start_date, due_date, position, metadata, milestone_id=None):
         """Создает новую карточку в базе данных.
 

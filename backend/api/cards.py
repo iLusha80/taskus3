@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from services.card_service import CardService
+from services.milestone_service import MilestoneService
 
 cards_bp = Blueprint('cards', __name__, url_prefix='/api/v1')
 """Блюпринт для управления карточками.
@@ -119,3 +120,24 @@ def get_card_history(card_id):
     if history is None:
         return jsonify({'error': 'Card not found'}), 404
     return jsonify([h.to_dict() for h in history])
+
+@cards_bp.route('/objectives/<int:objective_id>/milestones/<int:milestone_id>/cards', methods=['GET'])
+def get_cards_for_milestone(objective_id, milestone_id):
+    """Получает список карточек для указанного этапа, принадлежащего определенной цели.
+
+    Args:
+        objective_id (int): ID цели.
+        milestone_id (int): ID этапа.
+
+    Returns:
+        flask.Response: JSON-ответ, содержащий список карточек, или сообщение об ошибке.
+    """
+    milestone = MilestoneService.get_milestone_by_id(milestone_id)
+    if milestone is None:
+        return jsonify({'error': 'Milestone not found'}), 404
+    
+    if milestone.objective_id != objective_id:
+        return jsonify({'error': 'Milestone does not belong to the specified objective'}), 400
+
+    cards = CardService.get_cards_by_milestone(milestone_id)
+    return jsonify([c.to_dict() for c in cards])

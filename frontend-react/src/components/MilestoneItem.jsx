@@ -82,10 +82,10 @@ function MilestoneItem({ milestone, onEdit, onDelete, onFilterCards }) {
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
-    if (isExpanded && milestone.id) {
+    if (isExpanded && milestone.id && milestone.objective_id) {
       fetchCardsForMilestone();
     }
-  }, [isExpanded, milestone.id]);
+  }, [isExpanded, milestone.id, milestone.objective_id]);
 
   useEffect(() => {
     calculateProgress();
@@ -93,7 +93,7 @@ function MilestoneItem({ milestone, onEdit, onDelete, onFilterCards }) {
 
   const fetchCardsForMilestone = async () => {
     try {
-      const fetchedCards = await api.getCardsByMilestone(milestone.id);
+      const fetchedCards = await api.getCardsByMilestone(milestone.objective_id, milestone.id);
       setCards(fetchedCards);
     } catch (error) {
       showNotification('Ошибка при загрузке карточек для этапа.', 'error');

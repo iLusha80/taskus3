@@ -194,8 +194,8 @@ const api = {
         const response = await fetch(`${API_BASE_URL}/projects/${projectId}/milestones`);
         return response.json();
     },
-    getCardsByMilestone: async (milestoneId) => {
-        const response = await fetch(`${API_BASE_URL}/milestones/${milestoneId}/cards`);
+    getCardsByMilestone: async (objectiveId, milestoneId) => {
+        const response = await fetch(`${API_BASE_URL}/objectives/${objectiveId}/milestones/${milestoneId}/cards`);
         return response.json();
     }
 };
