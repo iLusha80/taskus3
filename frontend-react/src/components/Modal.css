@@ -13,11 +13,11 @@
 
 .modal-content {
     background-color: #fff;
-    padding: 30px;
+    padding: 20px;
     border-radius: 8px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     width: 90%;
-    max-width: 800px; /* Увеличиваем максимальную ширину */
+    max-width: 600px; /* Уменьшаем максимальную ширину для компактности */
     position: relative;
     display: flex; /* Используем flexbox для содержимого модального окна */
     flex-direction: column; /* Располагаем элементы по вертикали */
@@ -37,13 +37,13 @@
 }
 
 .form-group {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
 }
 
 .modal-content form {
     display: grid; /* Используем grid для полей формы */
     grid-template-columns: 1fr 1fr; /* Две колонки */
-    gap: 15px 20px; /* Отступы между полями */
+    gap: 10px 15px; /* Уменьшаем отступы между полями */
 }
 
 .form-group.full-width {
@@ -58,13 +58,33 @@
 }
 
 .form-group input[type="text"],
-.form-group textarea {
+.form-group textarea,
+.form-group input[type="date"], /* Добавляем стили для полей даты */
+.form-group select { /* Добавляем стили для выпадающих списков */
     width: calc(100% - 20px);
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 1em;
     box-sizing: border-box;
+    -webkit-appearance: none; /* Убираем нативный стиль для select */
+    -moz-appearance: none; /* Убираем нативный стиль для select */
+    appearance: none; /* Убираем нативный стиль для select */
+    background-color: #fff;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-6.5%200-12.3%203.2-16.1%208.1-3.8%204.9-4.9%2011-3.1%2017.3l139.5%20182.4c3.8%205%209.7%207.9%2016.1%207.9s12.3-2.9%2016.1-7.9l139.5-182.4c1.8-6.3.7-12.4-3.1-17.3z%22%2F%3E%3C%2Fsvg%3E'); /* Кастомная стрелка */
+    background-repeat: no-repeat;
+    background-position: right 10px top 50%;
+    background-size: 12px auto;
+    padding-right: 30px; /* Отступ для стрелки */
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus,
+.form-group input[type="date"]:focus,
+.form-group select:focus {
+    border-color: #007bff; /* Цвет границы при фокусе */
+    outline: none; /* Убираем стандартный outline */
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Добавляем тень при фокусе */
 }
 
 .form-group textarea {
