@@ -5,3 +5,4 @@ SQLAlchemy
 Flask-Cors
 psycopg2-binary
 sqlalchemy-utils
+flask-restx
