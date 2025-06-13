@@ -188,11 +188,7 @@ const fetchColumns = async () => {
          fullWidth: true,
          defaultValue: card.column_id
        },
-       { id: 'priority', label: 'Приоритет', type: 'text', required: false, defaultValue: card.priority },
-       { id: 'task_type', label: 'Тип задачи', type: 'text', required: false, defaultValue: card.task_type },
        { id: 'assigned_agent_id', label: 'Исполнитель (ID)', type: 'text', required: false, defaultValue: card.assigned_agent_id },
-       { id: 'start_date', label: 'Дата начала', type: 'date', required: false, defaultValue: card.start_date ? card.start_date.split('T')[0] : '' },
-       { id: 'due_date', label: 'Дата завершения', type: 'date', required: false, defaultValue: card.due_date ? card.due_date.split('T')[0] : '' },
        {
          id: 'milestone_id',
          label: 'Этап (Milestone)',
