@@ -5,9 +5,6 @@ const Modal = ({ title, message, fields, onSave, onConfirm, isConfirm, onClose, 
   const [formData, setFormData] = useState(initialData); // Инициализируем formData с initialData
   const modalRef = useRef(null);
 
-  useEffect(() => {
-    setFormData(initialData); // Обновляем formData при изменении initialData
-  }, [initialData]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
