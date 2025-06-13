@@ -7,14 +7,14 @@ class ObjectiveService:
     """Сервис для управления целями (Objective)."""
 
     @staticmethod
-    def create_objective(project_id, name, description=None, owner_agent_id=None, start_date=None, target_date=None):
+    def create_objective(project_id, name, description=None, status='not_started', start_date=None, target_date=None):
         """Создает новую цель.
 
         Args:
             project_id (int): ID проекта, к которому относится цель.
             name (str): Название цели.
             description (str, optional): Описание цели.
-            owner_agent_id (str, optional): ID главного агента, ответственного за цель.
+            status (str, optional): Текущий статус цели.
             start_date (str, optional): Дата начала цели.
             target_date (str, optional): Целевая дата завершения цели.
 
@@ -29,8 +29,7 @@ class ObjectiveService:
             project_id=project_id,
             name=name,
             description=description,
-            status='not_started',
-            owner_agent_id=owner_agent_id,
+            status=status,
             start_date=start_date,
             target_date=target_date
         )

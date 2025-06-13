@@ -24,14 +24,14 @@ def create_objective(project_id):
     data = request.get_json()
     name = data.get('name')
     description = data.get('description')
-    owner_agent_id = data.get('owner_agent_id')
+    status = data.get('status', 'not_started') # Получаем статус из данных, по умолчанию 'not_started'
     start_date = data.get('start_date')
     target_date = data.get('target_date')
 
     if not name:
         return jsonify({'error': 'Name is required'}), 400
 
-    new_objective = ObjectiveService.create_objective(project_id, name, description, owner_agent_id, start_date, target_date)
+    new_objective = ObjectiveService.create_objective(project_id, name, description, status, start_date, target_date)
     if new_objective is None:
         return jsonify({'error': 'Project not found'}), 404
     return jsonify(new_objective.to_dict()), 201

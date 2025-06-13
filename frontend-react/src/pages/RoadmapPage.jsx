@@ -66,8 +66,19 @@ function RoadmapPage() {
       fields: [
         { id: 'name', label: 'Название цели', type: 'text', required: true, fullWidth: true },
         { id: 'description', label: 'Описание цели', type: 'textarea', required: false, fullWidth: true },
-        { id: 'status', label: 'Статус', type: 'text', required: false, defaultValue: 'not_started' },
-        { id: 'owner_agent_id', label: 'Исполнитель (ID)', type: 'text', required: false },
+        {
+          id: 'status',
+          label: 'Статус',
+          type: 'select',
+          required: false,
+          defaultValue: 'not_started',
+          options: [
+            { value: 'not_started', label: 'Не начато' },
+            { value: 'in_progress', label: 'В процессе' },
+            { value: 'completed', label: 'Завершено' },
+            { value: 'blocked', label: 'Заблокировано' }
+          ]
+        },
         { id: 'start_date', label: 'Дата начала', type: 'date', required: false },
         { id: 'target_date', label: 'Целевая дата завершения', type: 'date', required: false },
       ],
@@ -97,8 +108,19 @@ function RoadmapPage() {
       fields: [
         { id: 'name', label: 'Название цели', type: 'text', required: true, defaultValue: objective.name, fullWidth: true },
         { id: 'description', label: 'Описание цели', type: 'textarea', required: false, defaultValue: objective.description, fullWidth: true },
-        { id: 'status', label: 'Статус', type: 'text', required: false, defaultValue: objective.status },
-        { id: 'owner_agent_id', label: 'Исполнитель (ID)', type: 'text', required: false, defaultValue: objective.owner_agent_id },
+        {
+          id: 'status',
+          label: 'Статус',
+          type: 'select',
+          required: false,
+          defaultValue: objective.status,
+          options: [
+            { value: 'not_started', label: 'Не начато' },
+            { value: 'in_progress', label: 'В процессе' },
+            { value: 'completed', label: 'Завершено' },
+            { value: 'blocked', label: 'Заблокировано' }
+          ]
+        },
         { id: 'start_date', label: 'Дата начала', type: 'date', required: false, defaultValue: objective.start_date ? objective.start_date.split(' ')[0] : '' },
         { id: 'target_date', label: 'Целевая дата завершения', type: 'date', required: false, defaultValue: objective.target_date ? objective.target_date.split(' ')[0] : '' },
       ],
