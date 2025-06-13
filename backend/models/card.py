@@ -1,5 +1,6 @@
 from database import db
 from datetime import datetime
+from models.agent import Agent
 
 class Card(db.Model):
     """Модель данных для карточки задачи.
@@ -9,7 +10,6 @@ class Card(db.Model):
         column_id (int): ID колонки, к которой принадлежит карточка (внешний ключ).
         title (str): Название карточки.
         description (str): Описание карточки.
-        status (str): Текущий статус карточки (например, 'open', 'in progress', 'closed').
         priority (str): Приоритет карточки (например, 'low', 'medium', 'high').
         assigned_agent_id (str): ID назначенного агента (необязательно).
         task_type (str): Тип задачи (например, 'bug', 'feature', 'task').
@@ -23,11 +23,11 @@ class Card(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     column_id = db.Column(db.Integer, db.ForeignKey('column.id', ondelete='CASCADE'), nullable=False)
+    milestone_id = db.Column(db.Integer, db.ForeignKey('milestone.id', ondelete='SET NULL'), nullable=True)
     title = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text)
-    status = db.Column(db.Text, default='open')
     priority = db.Column(db.Text, default='medium')
-    assigned_agent_id = db.Column(db.Text)
+    assigned_agent_id = db.Column(db.Integer, db.ForeignKey('agent.id'), nullable=True)
     task_type = db.Column(db.Text)
     start_date = db.Column(db.Text)
     due_date = db.Column(db.Text)
@@ -35,6 +35,8 @@ class Card(db.Model):
     created_at = db.Column(db.Text, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     updated_at = db.Column(db.Text, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), onupdate=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
     card_metadata = db.Column(db.Text, default='{}')
+
+    assigned_agent = db.relationship('Agent', backref='cards', lazy=True)
 
     history = db.relationship('CardHistory', backref='card', lazy=True, cascade="all, delete-orphan")
 
@@ -47,11 +49,13 @@ class Card(db.Model):
         return {
             'id': self.id,
             'column_id': self.column_id,
+            'milestone_id': self.milestone_id,
             'title': self.title,
             'description': self.description,
-            'status': self.status,
             'priority': self.priority,
             'assigned_agent_id': self.assigned_agent_id,
+            'assigned_agent_name': self.assigned_agent.name if self.assigned_agent else None,
+            'assigned_agent_color': self.assigned_agent.color if self.assigned_agent else None,
             'task_type': self.task_type,
             'start_date': self.start_date,
             'due_date': self.due_date,

@@ -2,6 +2,9 @@ from database import db
 from models.card import Card
 from models.column import Column
 from models.history import CardHistory
+from models.milestone import Milestone
+from services.milestone_service import MilestoneService
+from services.objective_service import ObjectiveService
 from datetime import datetime
 
 class CardService:
@@ -39,7 +42,21 @@ class CardService:
         return Card.query.get(card_id)
 
     @staticmethod
-    def create_card(column_id, title, description, status, priority, assigned_agent_id, task_type, start_date, due_date, position, metadata):
+    def get_cards_by_milestone(milestone_id):
+        """Получает список карточек для указанного этапа.
+
+        Карточки сортируются по их позиции.
+
+        Args:
+            milestone_id (int): ID этапа.
+
+        Returns:
+            list[Card]: Список объектов Card.
+        """
+        return Card.query.filter_by(milestone_id=milestone_id).order_by(Card.position).all()
+
+    @staticmethod
+    def create_card(column_id, title, description, priority, assigned_agent_id, task_type, start_date, due_date, position, metadata, milestone_id=None):
         """Создает новую карточку в базе данных.
 
         Также добавляет запись в историю о создании карточки.
@@ -48,7 +65,6 @@ class CardService:
             column_id (int): ID колонки, к которой будет принадлежать карточка.
             title (str): Название карточки.
             description (str): Описание карточки.
-            status (str): Статус карточки (по умолчанию 'open').
             priority (str): Приоритет карточки (по умолчанию 'medium').
             assigned_agent_id (str): ID назначенного агента (необязательно).
             task_type (str): Тип задачи (необязательно).
@@ -67,14 +83,14 @@ class CardService:
             column_id=column_id,
             title=title,
             description=description,
-            status=status,
             priority=priority,
             assigned_agent_id=assigned_agent_id,
             task_type=task_type,
             start_date=start_date,
             due_date=due_date,
             position=position,
-            metadata=metadata
+            metadata=metadata,
+            milestone_id=milestone_id
         )
         db.session.add(new_card)
         db.session.commit()
@@ -111,7 +127,6 @@ class CardService:
  
         # Сохраняем старые значения для истории
         old_column_id = card.column_id
-        old_status = card.status
         old_updated_at = card.updated_at
  
         if 'column_id' in data and data['column_id'] != old_column_id:
@@ -127,15 +142,6 @@ class CardService:
             card.title = data['title']
         if 'description' in data:
             card.description = data['description']
-        if 'status' in data and data['status'] != old_status:
-            card.status = data['status']
-            history_entries.append({
-                'event_type': 'status_change',
-                'field_name': 'status',
-                'old_value': old_status,
-                'new_value': data['status'],
-                'duration_in_seconds': (datetime.now() - datetime.strptime(old_updated_at, '%Y-%m-%d %H:%M:%S')).total_seconds() if old_updated_at else None
-            })
         if 'priority' in data:
             card.priority = data['priority']
         if 'assigned_agent_id' in data:
@@ -150,8 +156,17 @@ class CardService:
             card.position = data['position']
         if 'metadata' in data:
             card.metadata = data['metadata']
+        if 'milestone_id' in data:
+            card.milestone_id = data['milestone_id']
         
         db.session.commit()
+
+        # Проверяем и обновляем статус этапа, если карточка завершена
+        # Проверяем и обновляем статус этапа, если карточка завершена (находится в колонке "Готово")
+        if card.milestone_id:
+            column = Column.query.get(card.column_id)
+            if column and column.name == 'Готово':
+                CardService._check_and_update_milestone_status(card.milestone_id)
  
         # Добавляем записи в историю
         for entry in history_entries:
@@ -168,6 +183,25 @@ class CardService:
         db.session.commit()
  
         return card
+
+    @staticmethod
+    def _check_and_update_milestone_status(milestone_id):
+        """Проверяет, все ли карточки этапа завершены, и обновляет статус этапа."""
+        milestone = MilestoneService.get_milestone_by_id(milestone_id)
+        if milestone and milestone.status != 'completed':
+            all_cards_completed = all(Column.query.get(card.column_id).name == 'Готово' for card in milestone.cards)
+            if all_cards_completed:
+                MilestoneService.update_milestone(milestone.id, {'status': 'completed'})
+                ObjectiveService._check_and_update_objective_status(milestone.objective_id)
+
+    @staticmethod
+    def _check_and_update_objective_status(objective_id):
+        """Проверяет, все ли этапы цели завершены, и обновляет статус цели."""
+        objective = ObjectiveService.get_objective_by_id(objective_id)
+        if objective and objective.status != 'completed':
+            all_milestones_completed = all(milestone.status == 'completed' for milestone in objective.milestones)
+            if all_milestones_completed:
+                ObjectiveService.update_objective(objective.id, {'status': 'completed'})
 
     @staticmethod
     def delete_card(card_id):

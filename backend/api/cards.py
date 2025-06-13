@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from services.card_service import CardService
+from services.milestone_service import MilestoneService
 
 cards_bp = Blueprint('cards', __name__, url_prefix='/api/v1')
 """Блюпринт для управления карточками.
@@ -38,19 +39,24 @@ def create_card(column_id):
     data = request.get_json()
     title = data.get('title')
     description = data.get('description')
-    status = data.get('status', 'open')
     priority = data.get('priority', 'medium')
     assigned_agent_id = data.get('assigned_agent_id')
+    if assigned_agent_id is not None:
+        try:
+            assigned_agent_id = int(assigned_agent_id)
+        except ValueError:
+            return jsonify({'error': 'assigned_agent_id must be an integer'}), 400
     task_type = data.get('task_type')
     start_date = data.get('start_date')
     due_date = data.get('due_date')
     position = data.get('position', 0) # Устанавливаем значение по умолчанию 0, если не предоставлено
     metadata = data.get('metadata', '{}')
+    milestone_id = data.get('milestone_id')
 
     if not title:
         return jsonify({'error': 'Title is required'}), 400
 
-    new_card = CardService.create_card(column_id, title, description, status, priority, assigned_agent_id, task_type, start_date, due_date, position, metadata)
+    new_card = CardService.create_card(column_id, title, description, priority, assigned_agent_id, task_type, start_date, due_date, position, metadata, milestone_id)
     if new_card is None:
         return jsonify({'error': 'Column not found'}), 404
     return jsonify(new_card.to_dict()), 201
@@ -118,3 +124,24 @@ def get_card_history(card_id):
     if history is None:
         return jsonify({'error': 'Card not found'}), 404
     return jsonify([h.to_dict() for h in history])
+
+@cards_bp.route('/objectives/<int:objective_id>/milestones/<int:milestone_id>/cards', methods=['GET'])
+def get_cards_for_milestone(objective_id, milestone_id):
+    """Получает список карточек для указанного этапа, принадлежащего определенной цели.
+
+    Args:
+        objective_id (int): ID цели.
+        milestone_id (int): ID этапа.
+
+    Returns:
+        flask.Response: JSON-ответ, содержащий список карточек, или сообщение об ошибке.
+    """
+    milestone = MilestoneService.get_milestone_by_id(milestone_id)
+    if milestone is None:
+        return jsonify({'error': 'Milestone not found'}), 404
+    
+    if milestone.objective_id != objective_id:
+        return jsonify({'error': 'Milestone does not belong to the specified objective'}), 400
+
+    cards = CardService.get_cards_by_milestone(milestone_id)
+    return jsonify([c.to_dict() for c in cards])

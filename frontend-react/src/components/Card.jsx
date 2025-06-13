@@ -3,12 +3,12 @@ import styled from 'styled-components';
 
 const StyledCard = styled.div`
   background-color: ${({ theme }) => theme.colors.white};
-  border: 1px solid ${({ theme }) => theme.colors.grayLight};
+  border: 3px solid ${({ assignedAgentColor }) => assignedAgentColor || '#ccc'}; /* Динамическая рамка */
   border-radius: ${({ theme }) => theme.borderRadius.large}; /* Use large border radius */
   padding: ${({ theme }) => theme.spacing.medium};
   margin-bottom: ${({ theme }) => theme.spacing.small};
   box-shadow: ${({ theme }) => theme.boxShadow.medium}; /* Use medium shadow */
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out; /* Добавляем transition для цвета рамки */
   cursor: grab;
   position: relative; /* Added for positioning the close button */
 
@@ -67,10 +67,10 @@ const ActionButton = styled.button`
 `;
 
 function Card({ card, onDelete, onEdit }) {
-  const { id, title, description } = card;
+  const { id, title, description, assigned_agent_color } = card;
 
   return (
-    <StyledCard>
+    <StyledCard assignedAgentColor={assigned_agent_color}>
       <CloseButton onClick={(e) => { e.stopPropagation(); onDelete(id); }}>
         &times;
       </CloseButton>

@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import styled from 'styled-components'; // Import styled
 import ProjectListPage from './pages/ProjectListPage';
 import BoardPage from './pages/BoardPage';
+import RoadmapPage from './pages/RoadmapPage'; // Import RoadmapPage
 import Modal from './components/Modal';
 import { useNotification } from './contexts/NotificationContext';
 import api from './services/api';
@@ -121,6 +122,7 @@ function App() {
               }
             />
             <Route path="/project/:projectId/board/:boardId" element={<BoardPage />} />
+            <Route path="/project/:projectId/roadmap" element={<RoadmapPage />} /> {/* New Roadmap Route */}
             {/* Добавьте другие маршруты по мере необходимости */}
           </Routes>
         </main>
