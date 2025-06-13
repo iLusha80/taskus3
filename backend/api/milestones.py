@@ -32,6 +32,19 @@ def create_milestone(objective_id):
         return jsonify({'error': 'Objective not found'}), 404
     return jsonify(new_milestone.to_dict()), 201
 
+@milestones_bp.route('/objectives/<int:objective_id>/milestones', methods=['GET'])
+def get_milestones_for_objective(objective_id):
+    """Получает список этапов для указанной цели.
+
+    Args:
+        objective_id (int): ID цели.
+
+    Returns:
+        flask.Response: JSON-ответ, содержащий список этапов.
+    """
+    milestones = MilestoneService.get_milestones_by_objective(objective_id)
+    return jsonify([m.to_dict() for m in milestones])
+
 @milestones_bp.route('/milestones/<int:milestone_id>', methods=['GET'])
 def get_milestone(milestone_id):
     """Получает этап по его ID.
