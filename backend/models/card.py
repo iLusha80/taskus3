@@ -23,6 +23,7 @@ class Card(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     column_id = db.Column(db.Integer, db.ForeignKey('column.id', ondelete='CASCADE'), nullable=False)
+    milestone_id = db.Column(db.Integer, db.ForeignKey('milestone.id', ondelete='SET NULL'), nullable=True)
     title = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text)
     status = db.Column(db.Text, default='open')
@@ -47,6 +48,7 @@ class Card(db.Model):
         return {
             'id': self.id,
             'column_id': self.column_id,
+            'milestone_id': self.milestone_id,
             'title': self.title,
             'description': self.description,
             'status': self.status,

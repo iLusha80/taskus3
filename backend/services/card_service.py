@@ -2,6 +2,9 @@ from database import db
 from models.card import Card
 from models.column import Column
 from models.history import CardHistory
+from models.milestone import Milestone
+from services.milestone_service import MilestoneService
+from services.objective_service import ObjectiveService
 from datetime import datetime
 
 class CardService:
@@ -39,7 +42,7 @@ class CardService:
         return Card.query.get(card_id)
 
     @staticmethod
-    def create_card(column_id, title, description, status, priority, assigned_agent_id, task_type, start_date, due_date, position, metadata):
+    def create_card(column_id, title, description, status, priority, assigned_agent_id, task_type, start_date, due_date, position, metadata, milestone_id=None):
         """Создает новую карточку в базе данных.
 
         Также добавляет запись в историю о создании карточки.
@@ -74,7 +77,8 @@ class CardService:
             start_date=start_date,
             due_date=due_date,
             position=position,
-            metadata=metadata
+            metadata=metadata,
+            milestone_id=milestone_id
         )
         db.session.add(new_card)
         db.session.commit()
@@ -150,8 +154,14 @@ class CardService:
             card.position = data['position']
         if 'metadata' in data:
             card.metadata = data['metadata']
+        if 'milestone_id' in data:
+            card.milestone_id = data['milestone_id']
         
         db.session.commit()
+
+        # Проверяем и обновляем статус этапа, если карточка завершена
+        if 'status' in data and data['status'] == 'closed' and card.milestone_id:
+            CardService._check_and_update_milestone_status(card.milestone_id)
  
         # Добавляем записи в историю
         for entry in history_entries:
@@ -168,6 +178,25 @@ class CardService:
         db.session.commit()
  
         return card
+
+    @staticmethod
+    def _check_and_update_milestone_status(milestone_id):
+        """Проверяет, все ли карточки этапа завершены, и обновляет статус этапа."""
+        milestone = MilestoneService.get_milestone_by_id(milestone_id)
+        if milestone and milestone.status != 'completed':
+            all_cards_completed = all(card.status == 'closed' for card in milestone.cards)
+            if all_cards_completed:
+                MilestoneService.update_milestone(milestone.id, {'status': 'completed'})
+                ObjectiveService._check_and_update_objective_status(milestone.objective_id)
+
+    @staticmethod
+    def _check_and_update_objective_status(objective_id):
+        """Проверяет, все ли этапы цели завершены, и обновляет статус цели."""
+        objective = ObjectiveService.get_objective_by_id(objective_id)
+        if objective and objective.status != 'completed':
+            all_milestones_completed = all(milestone.status == 'completed' for milestone in objective.milestones)
+            if all_milestones_completed:
+                ObjectiveService.update_objective(objective.id, {'status': 'completed'})
 
     @staticmethod
     def delete_card(card_id):

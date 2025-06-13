@@ -46,11 +46,12 @@ def create_card(column_id):
     due_date = data.get('due_date')
     position = data.get('position', 0) # Устанавливаем значение по умолчанию 0, если не предоставлено
     metadata = data.get('metadata', '{}')
+    milestone_id = data.get('milestone_id')
 
     if not title:
         return jsonify({'error': 'Title is required'}), 400
 
-    new_card = CardService.create_card(column_id, title, description, status, priority, assigned_agent_id, task_type, start_date, due_date, position, metadata)
+    new_card = CardService.create_card(column_id, title, description, status, priority, assigned_agent_id, task_type, start_date, due_date, position, metadata, milestone_id)
     if new_card is None:
         return jsonify({'error': 'Column not found'}), 404
     return jsonify(new_card.to_dict()), 201

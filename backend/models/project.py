@@ -21,6 +21,7 @@ class Project(db.Model):
     project_metadata = db.Column(db.Text, default='{}')
 
     boards = db.relationship('Board', backref='project', lazy=True, cascade="all, delete-orphan")
+    objectives = db.relationship('Objective', backref='project', lazy=True, cascade="all, delete-orphan")
 
     def to_dict(self):
         """Преобразует объект Project в словарь.
