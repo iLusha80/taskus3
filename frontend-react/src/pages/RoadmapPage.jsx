@@ -126,7 +126,9 @@ function RoadmapPage() {
       ],
       onSave: async (formData) => {
         try {
-          const updatedObjective = await api.updateObjective(objective.id, formData);
+          const dataToSave = { ...formData };
+          delete dataToSave.milestones; // Исключаем milestones из данных для сохранения
+          const updatedObjective = await api.updateObjective(objective.id, dataToSave);
           if (updatedObjective) {
             showNotification(`Цель "${updatedObjective.name}" успешно обновлена!`, 'success');
             fetchObjectives();
