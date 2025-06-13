@@ -1,5 +1,6 @@
 from database import db
 from models.project import Project
+from services.board_service import BoardService
 
 class ProjectService:
     """Сервис для управления операциями, связанными с проектами.
@@ -42,6 +43,8 @@ class ProjectService:
         new_project = Project(name=name, description=description, metadata=metadata)
         db.session.add(new_project)
         db.session.commit()
+        # Создаем доску "main" для нового проекта
+        BoardService.create_board(new_project.id, "main", "{}")
         return new_project
 
     @staticmethod
