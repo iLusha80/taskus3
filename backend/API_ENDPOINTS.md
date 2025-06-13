@@ -1,389 +1,910 @@
-# API Endpoints
+# Документация API эндпоинтов
 
-## Проекты
+## Agents
 
-### GET /api/v1/projects
-Описание: Получить список всех проектов.
-Параметры запроса: Нет
-Пример ответа:
+### GET /api/v1/agents
+agents = Agent.query.all()
+return jsonify([agent.to_dict() for agent in agents])
+
+**Пример ответа:**
 ```json
 [
-    {
-        "id": 1,
-        "name": "Project Alpha",
-        "description": "Description for Alpha"
-    }
+  {
+    "id": 1,
+    "name": "Existing Agent",
+    "color": "#000000"
+  }
 ]
 ```
 
-### POST /api/v1/projects
-Описание: Создать новый проект.
-Тело запроса:
-```json
-{
-    "name": "Название проекта",
-    "description": "Описание проекта (необязательно)",
-    "metadata": "{}" (необязательно)
-}
-```
-Пример ответа:
-```json
-{
-    "id": 2,
-    "name": "New Project",
-    "description": "Description for new project",
-    "metadata": "{}"
-}
-```
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
 
-### GET /api/v1/projects/{project_id}
-Описание: Получить информацию о конкретном проекте по его ID.
-Параметры пути:
-- `project_id` (integer): ID проекта.
-Пример ответа:
-```json
-{
-    "id": 1,
-    "name": "Project Alpha",
-    "description": "Description for Alpha"
-}
-```
+### POST /api/v1/agents
+data = request.get_json()
+name = data.get('name')
+color = data.get('color')
 
-### PUT /api/v1/projects/{project_id}
-Описание: Обновить информацию о существующем проекте.
-Параметры пути:
-- `project_id` (integer): ID проекта.
-Тело запроса:
+if not name:
+    return jsonify({'error': 'Name is required'}), 400
+
+existing_agent = Agent.query.filter_by(name=name).first()
+if existing_agent:
+    return jsonify({'error': 'Agent with this name already exists'}), 409
+
+new_agent = Agent(name=name, color=color)
+db.session.add(new_agent)
+db.session.commit()
+return jsonify(new_agent.to_dict()), 201
+
+**Параметры:**
+*   `name` (string): Описание отсутствует. (Тело запроса)
+*   `color` (string): Описание отсутствует. (Тело запроса)
+
+**Пример запроса:**
 ```json
 {
-    "name": "Обновленное название",
-    "description": "Обновленное описание",
-    "metadata": "{}"
-}
-```
-Пример ответа:
-```json
-{
-    "id": 1,
-    "name": "Обновленное название",
-    "description": "Обновленное описание",
-    "metadata": "{}"
+  "name": "<string>",
+  "color": "<string>"
 }
 ```
 
-### DELETE /api/v1/projects/{project_id}
-Описание: Удалить проект по его ID.
-Параметры пути:
-- `project_id` (integer): ID проекта.
-Пример ответа: (Статус 204 No Content)
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "name": "New Agent",
+  "color": "#FFFFFF"
+}
+```
 
-## Доски
+**Коды состояния:**
+*   `201 Created`: Ресурс успешно создан.
+*   `400 Bad Request`: Неверный запрос. Отсутствуют обязательные поля или некорректные данные.
+*   `409 Conflict`: Конфликт. Ресурс с таким именем уже существует.
 
-### GET /api/v1/projects/{project_id}/boards
-Описание: Получить список всех досок, принадлежащих конкретному проекту.
-Параметры пути:
-- `project_id` (integer): ID проекта.
-Пример ответа:
+### PUT /api/v1/agents/<int:agent_id>
+agent = Agent.query.get(agent_id)
+if not agent:
+    return jsonify({'error': 'Agent not found'}), 404
+
+data = request.get_json()
+if not data:
+    return jsonify({'error': 'No data provided for update'}), 400
+
+if 'name' in data:
+    # Проверяем, не занято ли новое имя другим агентом
+    existing_agent = Agent.query.filter(Agent.name == data['name'], Agent.id != agent_id).first()
+    if existing_agent:
+        return jsonify({'error': 'Agent with this name already exists'}), 409
+    agent.name = data['name']
+
+if 'color' in data:
+    agent.color = data['color']
+
+db.session.commit()
+return jsonify(agent.to_dict())
+
+**Параметры:**
+*   `agent_id` (unknown): Inferred from function signature.
+*   `name` (string): Описание отсутствует. (Тело запроса)
+*   `color` (string): Описание отсутствует. (Тело запроса)
+
+**Пример запроса:**
+```json
+{
+  "name": "<string>",
+  "color": "<string>"
+}
+```
+
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "name": "Existing Agent",
+  "color": "#000000"
+}
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `400 Bad Request`: Неверный запрос. Отсутствуют обязательные поля или некорректные данные.
+*   `404 Not Found`: Ресурс не найден.
+*   `409 Conflict`: Конфликт. Ресурс с таким именем уже существует.
+
+## Boards
+
+### GET /api/v1/projects/<int:project_id>/boards
+Получает список досок для указанного проекта.
+
+**Параметры:**
+*   `project_id` (int): ID проекта.
+
+**Пример ответа:**
 ```json
 [
-    {
-        "id": 1,
-        "project_id": 1,
-        "name": "Board 1",
-        "metadata": "{}"
-    }
+  {
+    "id": 1,
+    "name": "Item 1"
+  }
 ]
 ```
 
-### POST /api/v1/projects/{project_id}/boards
-Описание: Создать новую доску для конкретного проекта.
-Параметры пути:
-- `project_id` (integer): ID проекта.
-Тело запроса:
-```json
-{
-    "name": "Название доски",
-    "metadata": "{}" (необязательно)
-}
-```
-Пример ответа:
-```json
-{
-    "id": 2,
-    "project_id": 1,
-    "name": "New Board",
-    "metadata": "{}"
-}
-```
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `404 Not Found`: Ресурс не найден.
 
-### GET /api/v1/boards/{board_id}
-Описание: Получить информацию о конкретной доске по ее ID.
-Параметры пути:
-- `board_id` (integer): ID доски.
-Пример ответа:
+### POST /api/v1/projects/<int:project_id>/boards
+Создает новую доску для указанного проекта.
+
+Принимает данные доски в формате JSON.
+
+**Параметры:**
+*   `project_id` (int): ID проекта, к которому будет принадлежать доска.
+*   `name` (string): Описание отсутствует. (Тело запроса)
+*   `metadata` (string): Описание отсутствует. (По умолчанию: '{}') (Тело запроса)
+
+**Пример запроса:**
 ```json
 {
-    "id": 1,
-    "project_id": 1,
-    "name": "Board 1",
-    "metadata": "{}"
+  "name": "<string>",
+  "metadata": "<string>"
 }
 ```
 
-### PUT /api/v1/boards/{board_id}
-Описание: Обновить информацию о существующей доске.
-Параметры пути:
-- `board_id` (integer): ID доски.
-Тело запроса:
+**Пример ответа:**
 ```json
 {
-    "name": "Обновленное название доски",
-    "metadata": "{}"
-}
-```
-Пример ответа:
-```json
-{
-    "id": 1,
-    "project_id": 1,
-    "name": "Обновленное название доски",
-    "metadata": "{}"
+  "id": 1,
+  "name": "New Board",
+  "project_id": 1
 }
 ```
 
-### DELETE /api/v1/boards/{board_id}
-Описание: Удалить доску по ее ID.
-Параметры пути:
-- `board_id` (integer): ID доски.
-Пример ответа: (Статус 204 No Content)
+**Коды состояния:**
+*   `201 Created`: Ресурс успешно создан.
+*   `400 Bad Request`: Неверный запрос. Отсутствуют обязательные поля или некорректные данные.
+*   `404 Not Found`: Ресурс не найден.
 
-## Колонки
+### GET /api/v1/boards/<int:board_id>
+Получает доску по ее ID.
 
-### GET /api/v1/boards/{board_id}/columns
-Описание: Получить список всех колонок, принадлежащих конкретной доске.
-Параметры пути:
-- `board_id` (integer): ID доски.
-Пример ответа:
+**Параметры:**
+*   `board_id` (int): ID доски.
+
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "name": "Existing Board",
+  "project_id": 1
+}
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `404 Not Found`: Ресурс не найден.
+
+### PUT /api/v1/boards/<int:board_id>
+Обновляет существующую доску.
+
+Принимает ID доски и данные для обновления в формате JSON.
+
+**Параметры:**
+*   `board_id` (int): ID доски.
+*   `name` (string): Описание отсутствует. (Тело запроса)
+*   `metadata` (string): Описание отсутствует. (Тело запроса)
+
+**Пример запроса:**
+```json
+{
+  "name": "<string>",
+  "metadata": "<string>"
+}
+```
+
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "name": "Existing Board",
+  "project_id": 1
+}
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `400 Bad Request`: Неверный запрос. Отсутствуют обязательные поля или некорректные данные.
+*   `404 Not Found`: Ресурс не найден.
+
+### DELETE /api/v1/boards/<int:board_id>
+Удаляет доску по ее ID.
+
+**Параметры:**
+*   `board_id` (int): ID доски.
+
+**Коды состояния:**
+*   `204 No Content`: Ресурс успешно удален.
+*   `404 Not Found`: Ресурс не найден.
+
+## Cards
+
+### GET /api/v1/columns/<int:column_id>/cards
+Получает список карточек для указанной колонки.
+
+**Параметры:**
+*   `column_id` (int): ID колонки.
+
+**Пример ответа:**
 ```json
 [
-    {
-        "id": 1,
-        "board_id": 1,
-        "name": "To Do",
-        "position": 0,
-        "metadata": "{}"
-    }
+  {
+    "id": 1,
+    "name": "Item 1"
+  }
 ]
 ```
 
-### POST /api/v1/boards/{board_id}/columns
-Описание: Создать новую колонку для конкретной доски.
-Параметры пути:
-- `board_id` (integer): ID доски.
-Тело запроса:
-```json
-{
-    "name": "Название колонки",
-    "position": 0 (необязательно),
-    "metadata": "{}" (необязательно)
-}
-```
-Пример ответа:
-```json
-{
-    "id": 2,
-    "board_id": 1,
-    "name": "New Column",
-    "position": 1,
-    "metadata": "{}"
-}
-```
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `404 Not Found`: Ресурс не найден.
 
-### GET /api/v1/columns/{column_id}
-Описание: Получить информацию о конкретной колонке по ее ID.
-Параметры пути:
-- `column_id` (integer): ID колонки.
-Пример ответа:
-```json
-{
-    "id": 1,
-    "board_id": 1,
-    "name": "To Do",
-    "position": 0,
-    "metadata": "{}"
-}
-```
+### POST /api/v1/columns/<int:column_id>/cards
+Создает новую карточку для указанной колонки.
 
-### PUT /api/v1/columns/{column_id}
-Описание: Обновить информацию о существующей колонке.
-Параметры пути:
-- `column_id` (integer): ID колонки.
-Тело запроса:
+Принимает данные карточки в формате JSON.
+
+**Параметры:**
+*   `column_id` (int): ID колонки, к которой будет принадлежать карточка.
+*   `title` (string): Описание отсутствует. (Тело запроса)
+*   `description` (string): Описание отсутствует. (Тело запроса)
+*   `priority` (string): Описание отсутствует. (По умолчанию: 'medium') (Тело запроса)
+*   `assigned_agent_id` (integer): Описание отсутствует. (Тело запроса)
+*   `task_type` (string): Описание отсутствует. (Тело запроса)
+*   `start_date` (string): Описание отсутствует. (Тело запроса)
+*   `due_date` (string): Описание отсутствует. (Тело запроса)
+*   `position` (integer): Описание отсутствует. (По умолчанию: 0) (Тело запроса)
+*   `metadata` (string): Описание отсутствует. (По умолчанию: '{}') (Тело запроса)
+*   `milestone_id` (string): Описание отсутствует. (Тело запроса)
+
+**Пример запроса:**
 ```json
 {
-    "name": "Обновленное название колонки",
-    "position": 1,
-    "metadata": "{}"
-}
-```
-Пример ответа:
-```json
-{
-    "id": 1,
-    "board_id": 1,
-    "name": "Обновленное название колонки",
-    "position": 1,
-    "metadata": "{}"
+  "title": "<string>",
+  "description": "<string>",
+  "priority": "<string>",
+  "assigned_agent_id": "<integer>",
+  "task_type": "<string>",
+  "start_date": "<string>",
+  "due_date": "<string>",
+  "position": "<integer>",
+  "metadata": "<string>",
+  "milestone_id": "<string>"
 }
 ```
 
-### DELETE /api/v1/columns/{column_id}
-Описание: Удалить колонку по ее ID.
-Параметры пути:
-- `column_id` (integer): ID колонки.
-Пример ответа: (Статус 204 No Content)
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "title": "New Card",
+  "column_id": 1
+}
+```
 
-## Карточки
+**Коды состояния:**
+*   `201 Created`: Ресурс успешно создан.
+*   `400 Bad Request`: Неверный запрос. Отсутствуют обязательные поля или некорректные данные.
+*   `404 Not Found`: Ресурс не найден.
 
-### GET /api/v1/columns/{column_id}/cards
-Описание: Получить список всех карточек, принадлежащих конкретной колонке.
-Параметры пути:
-- `column_id` (integer): ID колонки.
-Пример ответа:
+### GET /api/v1/cards/<int:card_id>
+Получает карточку по ее ID.
+
+**Параметры:**
+*   `card_id` (int): ID карточки.
+
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "title": "Existing Card",
+  "column_id": 1
+}
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `404 Not Found`: Ресурс не найден.
+
+### PUT /api/v1/cards/<int:card_id>
+Обновляет существующую карточку.
+
+Принимает ID карточки и данные для обновления в формате JSON.
+
+**Параметры:**
+*   `card_id` (int): ID карточки.
+*   `title` (string): Описание отсутствует. (Тело запроса)
+*   `description` (string): Описание отсутствует. (Тело запроса)
+*   `priority` (string): Описание отсутствует. (Тело запроса)
+*   `assigned_agent_id` (string): Описание отсутствует. (Тело запроса)
+*   `task_type` (string): Описание отсутствует. (Тело запроса)
+*   `start_date` (string): Описание отсутствует. (Тело запроса)
+*   `due_date` (string): Описание отсутствует. (Тело запроса)
+*   `position` (string): Описание отсутствует. (Тело запроса)
+*   `metadata` (string): Описание отсутствует. (Тело запроса)
+*   `milestone_id` (string): Описание отсутствует. (Тело запроса)
+
+**Пример запроса:**
+```json
+{
+  "title": "<string>",
+  "description": "<string>",
+  "priority": "<string>",
+  "assigned_agent_id": "<string>",
+  "task_type": "<string>",
+  "start_date": "<string>",
+  "due_date": "<string>",
+  "position": "<string>",
+  "metadata": "<string>",
+  "milestone_id": "<string>"
+}
+```
+
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "title": "Existing Card",
+  "column_id": 1
+}
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `400 Bad Request`: Неверный запрос. Отсутствуют обязательные поля или некорректные данные.
+*   `404 Not Found`: Ресурс не найден.
+
+### DELETE /api/v1/cards/<int:card_id>
+Удаляет карточку по ее ID.
+
+**Параметры:**
+*   `card_id` (int): ID карточки.
+
+**Коды состояния:**
+*   `204 No Content`: Ресурс успешно удален.
+*   `404 Not Found`: Ресурс не найден.
+
+### GET /api/v1/cards/<int:card_id>/history
+Получает историю изменений для указанной карточки.
+
+**Параметры:**
+*   `card_id` (int): ID карточки.
+
+**Пример ответа:**
 ```json
 [
-    {
-        "id": 1,
-        "column_id": 1,
-        "title": "Task 1",
-        "description": "Description for task 1",
-        "status": "open",
-        "priority": "medium",
-        "assigned_agent_id": null,
-        "task_type": null,
-        "start_date": null,
-        "due_date": null,
-        "position": 0,
-        "metadata": "{}"
-    }
+  {
+    "id": 1,
+    "name": "Item 1"
+  }
 ]
 ```
 
-### POST /api/v1/columns/{column_id}/cards
-Описание: Создать новую карточку для конкретной колонки.
-Параметры пути:
-- `column_id` (integer): ID колонки.
-Тело запроса:
-```json
-{
-    "title": "Название карточки",
-    "description": "Описание карточки (необязательно)",
-    "status": "open" (по умолчанию),
-    "priority": "medium" (по умолчанию),
-    "assigned_agent_id": null (необязательно),
-    "task_type": null (необязательно),
-    "start_date": null (необязательно, формат YYYY-MM-DD),
-    "due_date": null (необязательно, формат YYYY-MM-DD),
-    "position": 0 (по умолчанию),
-    "metadata": "{}" (необязательно)
-}
-```
-Пример ответа:
-```json
-{
-    "id": 2,
-    "column_id": 1,
-    "title": "New Card",
-    "description": "Description for new card",
-    "status": "open",
-    "priority": "medium",
-    "assigned_agent_id": null,
-    "task_type": null,
-    "start_date": null,
-    "due_date": null,
-    "position": 0,
-    "metadata": "{}"
-}
-```
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `404 Not Found`: Ресурс не найден.
 
-### GET /api/v1/cards/{card_id}
-Описание: Получить информацию о конкретной карточке по ее ID.
-Параметры пути:
-- `card_id` (integer): ID карточки.
-Пример ответа:
-```json
-{
-    "id": 1,
-    "column_id": 1,
-    "title": "Task 1",
-    "description": "Description for task 1",
-    "status": "open",
-    "priority": "medium",
-    "assigned_agent_id": null,
-    "task_type": null,
-    "start_date": null,
-    "due_date": null,
-    "position": 0,
-    "metadata": "{}"
-}
-```
+### GET /api/v1/objectives/<int:objective_id>/milestones/<int:milestone_id>/cards
+Получает список карточек для указанного этапа, принадлежащего определенной цели.
 
-### PUT /api/v1/cards/{card_id}
-Описание: Обновить информацию о существующей карточке.
-Параметры пути:
-- `card_id` (integer): ID карточки.
-Тело запроса:
-```json
-{
-    "title": "Обновленное название",
-    "description": "Обновленное описание",
-    "status": "closed",
-    "priority": "high",
-    "assigned_agent_id": 1,
-    "task_type": "bug",
-    "start_date": "2023-01-01",
-    "due_date": "2023-01-31",
-    "position": 1,
-    "metadata": "{}"
-}
-```
-Пример ответа:
-```json
-{
-    "id": 1,
-    "column_id": 1,
-    "title": "Обновленное название",
-    "description": "Обновленное описание",
-    "status": "closed",
-    "priority": "high",
-    "assigned_agent_id": 1,
-    "task_type": "bug",
-    "start_date": "2023-01-01",
-    "due_date": "2023-01-31",
-    "position": 1,
-    "metadata": "{}"
-}
-```
+**Параметры:**
+*   `objective_id` (int): ID цели.
+*   `milestone_id` (int): ID этапа.
 
-### DELETE /api/v1/cards/{card_id}
-Описание: Удалить карточку по ее ID.
-Параметры пути:
-- `card_id` (integer): ID карточки.
-Пример ответа: (Статус 204 No Content)
-
-### GET /api/v1/cards/{card_id}/history
-Описание: Получить историю изменений для конкретной карточки.
-Параметры пути:
-- `card_id` (integer): ID карточки.
-Пример ответа:
+**Пример ответа:**
 ```json
 [
-    {
-        "id": 1,
-        "card_id": 1,
-        "timestamp": "2023-05-31T10:00:00Z",
-        "field_name": "status",
-        "old_value": "open",
-        "new_value": "in progress"
-    }
+  {
+    "id": 1,
+    "name": "Item 1"
+  }
 ]
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `400 Bad Request`: Неверный запрос. Отсутствуют обязательные поля или некорректные данные.
+*   `404 Not Found`: Ресурс не найден.
+
+## Columns
+
+### GET /api/v1/boards/<int:board_id>/columns
+Получает список колонок для указанной доски.
+
+**Параметры:**
+*   `board_id` (int): ID доски.
+
+**Пример ответа:**
+```json
+[
+  {
+    "id": 1,
+    "name": "Item 1"
+  }
+]
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `404 Not Found`: Ресурс не найден.
+
+### POST /api/v1/boards/<int:board_id>/columns
+Создает новую колонку для указанной доски.
+
+Принимает данные колонки в формате JSON.
+
+**Параметры:**
+*   `board_id` (int): ID доски, к которой будет принадлежать колонка.
+*   `name` (string): Описание отсутствует. (Тело запроса)
+*   `position` (string): Описание отсутствует. (Тело запроса)
+*   `metadata` (string): Описание отсутствует. (По умолчанию: '{}') (Тело запроса)
+
+**Пример запроса:**
+```json
+{
+  "name": "<string>",
+  "position": "<string>",
+  "metadata": "<string>"
+}
+```
+
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "name": "New Column",
+  "board_id": 1
+}
+```
+
+**Коды состояния:**
+*   `201 Created`: Ресурс успешно создан.
+*   `400 Bad Request`: Неверный запрос. Отсутствуют обязательные поля или некорректные данные.
+*   `404 Not Found`: Ресурс не найден.
+
+### GET /api/v1/columns/<int:column_id>
+Получает колонку по ее ID.
+
+**Параметры:**
+*   `column_id` (int): ID колонки.
+
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "name": "Existing Column",
+  "board_id": 1
+}
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `404 Not Found`: Ресурс не найден.
+
+### PUT /api/v1/columns/<int:column_id>
+Обновляет существующую колонку.
+
+Принимает ID колонки и данные для обновления в формате JSON.
+
+**Параметры:**
+*   `column_id` (int): ID колонки.
+*   `name` (string): Описание отсутствует. (Тело запроса)
+*   `position` (string): Описание отсутствует. (Тело запроса)
+*   `metadata` (string): Описание отсутствует. (Тело запроса)
+
+**Пример запроса:**
+```json
+{
+  "name": "<string>",
+  "position": "<string>",
+  "metadata": "<string>"
+}
+```
+
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "name": "Existing Column",
+  "board_id": 1
+}
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `400 Bad Request`: Неверный запрос. Отсутствуют обязательные поля или некорректные данные.
+*   `404 Not Found`: Ресурс не найден.
+
+### DELETE /api/v1/columns/<int:column_id>
+Удаляет колонку по ее ID.
+
+**Параметры:**
+*   `column_id` (int): ID колонки.
+
+**Коды состояния:**
+*   `204 No Content`: Ресурс успешно удален.
+*   `404 Not Found`: Ресурс не найден.
+
+## Milestones
+
+### POST /api/v1/objectives/<int:objective_id>/milestones
+Создает новый этап для указанной цели.
+
+Принимает данные этапа в формате JSON.
+
+**Параметры:**
+*   `objective_id` (int): ID цели, к которой будет относиться этап.
+*   `name` (string): Описание отсутствует. (Тело запроса)
+*   `description` (string): Описание отсутствует. (Тело запроса)
+*   `due_date` (string): Описание отсутствует. (Тело запроса)
+
+**Пример запроса:**
+```json
+{
+  "name": "<string>",
+  "description": "<string>",
+  "due_date": "<string>"
+}
+```
+
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "name": "New Milestone",
+  "objective_id": 1
+}
+```
+
+**Коды состояния:**
+*   `201 Created`: Ресурс успешно создан.
+*   `400 Bad Request`: Неверный запрос. Отсутствуют обязательные поля или некорректные данные.
+*   `404 Not Found`: Ресурс не найден.
+
+### GET /api/v1/objectives/<int:objective_id>/milestones
+Получает список этапов для указанной цели.
+
+**Параметры:**
+*   `objective_id` (int): ID цели.
+
+**Пример ответа:**
+```json
+[
+  {
+    "id": 1,
+    "name": "Item 1"
+  }
+]
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+
+### GET /api/v1/projects/<int:project_id>/milestones
+Получает список этапов для указанного проекта.
+
+**Параметры:**
+*   `project_id` (int): ID проекта.
+
+**Пример ответа:**
+```json
+[
+  {
+    "id": 1,
+    "name": "Item 1"
+  }
+]
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+
+### GET /api/v1/milestones/<int:milestone_id>
+Получает этап по его ID.
+
+**Параметры:**
+*   `milestone_id` (int): ID этапа.
+
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "name": "Existing Milestone",
+  "objective_id": 1
+}
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `404 Not Found`: Ресурс не найден.
+
+### PUT /api/v1/milestones/<int:milestone_id>
+Обновляет существующий этап.
+
+Принимает ID этапа и данные для обновления в формате JSON.
+
+**Параметры:**
+*   `milestone_id` (int): ID этапа.
+*   `name` (string): Описание отсутствует. (Тело запроса)
+*   `description` (string): Описание отсутствует. (Тело запроса)
+*   `due_date` (string): Описание отсутствует. (Тело запроса)
+
+**Пример запроса:**
+```json
+{
+  "name": "<string>",
+  "description": "<string>",
+  "due_date": "<string>"
+}
+```
+
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "name": "Existing Milestone",
+  "objective_id": 1
+}
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `400 Bad Request`: Неверный запрос. Отсутствуют обязательные поля или некорректные данные.
+*   `404 Not Found`: Ресурс не найден.
+
+### DELETE /api/v1/milestones/<int:milestone_id>
+Удаляет этап по его ID.
+
+**Параметры:**
+*   `milestone_id` (int): ID этапа.
+
+**Коды состояния:**
+*   `204 No Content`: Ресурс успешно удален.
+*   `404 Not Found`: Ресурс не найден.
+
+## Objectives
+
+### POST /api/v1/projects/<int:project_id>/objectives
+Создает новую цель для указанного проекта.
+
+Принимает данные цели в формате JSON.
+
+**Параметры:**
+*   `project_id` (int): ID проекта, к которому будет относиться цель.
+*   `name` (string): Описание отсутствует. (Тело запроса)
+*   `description` (string): Описание отсутствует. (Тело запроса)
+*   `status` (string): Описание отсутствует. (По умолчанию: 'not_started') (Тело запроса)
+*   `start_date` (string): Описание отсутствует. (Тело запроса)
+*   `target_date` (string): Описание отсутствует. (Тело запроса)
+
+**Пример запроса:**
+```json
+{
+  "name": "<string>",
+  "description": "<string>",
+  "status": "<string>",
+  "start_date": "<string>",
+  "target_date": "<string>"
+}
+```
+
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "name": "New Objective",
+  "project_id": 1
+}
+```
+
+**Коды состояния:**
+*   `201 Created`: Ресурс успешно создан.
+*   `400 Bad Request`: Неверный запрос. Отсутствуют обязательные поля или некорректные данные.
+*   `404 Not Found`: Ресурс не найден.
+
+### GET /api/v1/projects/<int:project_id>/objectives
+Получает список целей для указанного проекта с вложенными этапами.
+
+**Параметры:**
+*   `project_id` (int): ID проекта.
+
+**Пример ответа:**
+```json
+[
+  {
+    "id": 1,
+    "name": "Item 1"
+  }
+]
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+
+### GET /api/v1/objectives/<int:objective_id>
+Получает цель по ее ID.
+
+**Параметры:**
+*   `objective_id` (int): ID цели.
+
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "name": "Existing Objective",
+  "project_id": 1
+}
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `404 Not Found`: Ресурс не найден.
+
+### PUT /api/v1/objectives/<int:objective_id>
+Обновляет существующую цель.
+
+Принимает ID цели и данные для обновления в формате JSON.
+
+**Параметры:**
+*   `objective_id` (int): ID цели.
+*   `name` (string): Описание отсутствует. (Тело запроса)
+*   `description` (string): Описание отсутствует. (Тело запроса)
+*   `status` (string): Описание отсутствует. (Тело запроса)
+*   `start_date` (string): Описание отсутствует. (Тело запроса)
+*   `target_date` (string): Описание отсутствует. (Тело запроса)
+
+**Пример запроса:**
+```json
+{
+  "name": "<string>",
+  "description": "<string>",
+  "status": "<string>",
+  "start_date": "<string>",
+  "target_date": "<string>"
+}
+```
+
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "name": "Existing Objective",
+  "project_id": 1
+}
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `400 Bad Request`: Неверный запрос. Отсутствуют обязательные поля или некорректные данные.
+*   `404 Not Found`: Ресурс не найден.
+
+### DELETE /api/v1/objectives/<int:objective_id>
+Удаляет цель по ее ID.
+
+**Параметры:**
+*   `objective_id` (int): ID цели.
+
+**Коды состояния:**
+*   `204 No Content`: Ресурс успешно удален.
+*   `404 Not Found`: Ресурс не найден.
+
+## Projects
+
+### GET /api/v1/projects/
+Получает список всех проектов.
+
+**Пример ответа:**
+```json
+[
+  {
+    "id": 1,
+    "name": "Item 1"
+  }
+]
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+
+### POST /api/v1/projects/
+Создает новый проект.
+
+Принимает данные проекта в формате JSON.
+
+**Параметры:**
+*   `name` (string): Описание отсутствует. (Тело запроса)
+*   `description` (string): Описание отсутствует. (Тело запроса)
+*   `metadata` (string): Описание отсутствует. (По умолчанию: '{}') (Тело запроса)
+
+**Пример запроса:**
+```json
+{
+  "name": "<string>",
+  "description": "<string>",
+  "metadata": "<string>"
+}
+```
+
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "name": "New Project"
+}
+```
+
+**Коды состояния:**
+*   `201 Created`: Ресурс успешно создан.
+*   `400 Bad Request`: Неверный запрос. Отсутствуют обязательные поля или некорректные данные.
+
+### GET /api/v1/projects/<int:project_id>
+Получает проект по его ID.
+
+**Параметры:**
+*   `project_id` (int): ID проекта.
+
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "name": "Existing Project"
+}
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `404 Not Found`: Ресурс не найден.
+
+### PUT /api/v1/projects/<int:project_id>
+Обновляет существующий проект.
+
+Принимает ID проекта и данные для обновления в формате JSON.
+
+**Параметры:**
+*   `project_id` (int): ID проекта.
+*   `name` (string): Описание отсутствует. (Тело запроса)
+*   `description` (string): Описание отсутствует. (Тело запроса)
+*   `metadata` (string): Описание отсутствует. (Тело запроса)
+
+**Пример запроса:**
+```json
+{
+  "name": "<string>",
+  "description": "<string>",
+  "metadata": "<string>"
+}
+```
+
+**Пример ответа:**
+```json
+{
+  "id": 1,
+  "name": "Existing Project"
+}
+```
+
+**Коды состояния:**
+*   `200 OK`: Запрос успешно выполнен.
+*   `400 Bad Request`: Неверный запрос. Отсутствуют обязательные поля или некорректные данные.
+*   `404 Not Found`: Ресурс не найден.
+
+### DELETE /api/v1/projects/<int:project_id>
+Удаляет проект по его ID.
+
+**Параметры:**
+*   `project_id` (int): ID проекта.
+
+**Коды состояния:**
+*   `204 No Content`: Ресурс успешно удален.
+*   `404 Not Found`: Ресурс не найден.
