@@ -4,7 +4,7 @@ import ProgressBar from './ProgressBar';
 import MilestoneItem from './MilestoneItem';
 import api from '../services/api';
 import { useNotification } from '../contexts/NotificationContext';
-import { FaEdit, FaTrashAlt, FaPlus } from 'react-icons/fa';
+import { FaEdit, FaTrashAlt, FaPlus, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
 const ObjectiveContainer = styled.div`
   background-color: ${({ theme }) => theme.colors.backgroundLight};
@@ -20,6 +20,7 @@ const ObjectiveHeader = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: ${({ theme }) => theme.spacing.small};
+  cursor: pointer; /* Добавляем курсор для интерактивности */
 `;
 
 const ObjectiveTitle = styled.h3`
@@ -61,6 +62,7 @@ const ActionButton = styled.button`
 
 function ObjectiveItem({ objective, onEdit, onDelete, onAddMilestone, onEditMilestone, onDeleteMilestone, onFilterCards }) {
   const { showNotification } = useNotification();
+  const [isExpanded, setIsExpanded] = useState(true); // По умолчанию развернуто
   const [milestones, setMilestones] = useState([]);
   const [progress, setProgress] = useState(0);
 
@@ -99,44 +101,53 @@ function ObjectiveItem({ objective, onEdit, onDelete, onAddMilestone, onEditMile
     setProgress(calculatedProgress);
   };
 
+  const handleToggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
   return (
     <ObjectiveContainer>
-      <ObjectiveHeader>
+      <ObjectiveHeader onClick={handleToggleExpand}>
         <ObjectiveTitle>{objective.name} - {objective.status}</ObjectiveTitle>
         <Actions>
-          <ActionButton onClick={() => onAddMilestone(objective.id)}>
+          <ActionButton onClick={(e) => { e.stopPropagation(); onAddMilestone(objective.id); }}>
             <FaPlus /> Добавить этап
           </ActionButton>
-          <ActionButton onClick={() => onEdit(objective)}>
+          <ActionButton onClick={(e) => { e.stopPropagation(); onEdit(objective); }}>
             <FaEdit />
           </ActionButton>
-          <ActionButton onClick={() => onDelete(objective.id)}>
+          <ActionButton onClick={(e) => { e.stopPropagation(); onDelete(objective.id); }}>
             <FaTrashAlt />
           </ActionButton>
+          {isExpanded ? <FaChevronUp /> : <FaChevronDown />}
         </Actions>
       </ObjectiveHeader>
-      <ObjectiveDetails>
-        <p>{objective.description}</p>
-        <p>Начало: {objective.start_date} | Цель: {objective.target_date}</p>
-        <ProgressBarWrapper>
-          <ProgressBar progress={progress} />
-        </ProgressBarWrapper>
-      </ObjectiveDetails>
-      <MilestonesContainer>
-        {milestones.length > 0 ? (
-          milestones.map(milestone => (
-            <MilestoneItem
-              key={milestone.id}
-              milestone={milestone}
-              onEdit={onEditMilestone}
-              onDelete={onDeleteMilestone}
-              onFilterCards={onFilterCards}
-            />
-          ))
-        ) : (
-          <p>Нет этапов для этой цели.</p>
-        )}
-      </MilestonesContainer>
+      {isExpanded && (
+        <>
+          <ObjectiveDetails>
+            <p>{objective.description}</p>
+            <p>Начало: {objective.start_date} | Цель: {objective.target_date}</p>
+            <ProgressBarWrapper>
+              <ProgressBar progress={progress} />
+            </ProgressBarWrapper>
+          </ObjectiveDetails>
+          <MilestonesContainer>
+            {milestones.length > 0 ? (
+              milestones.map(milestone => (
+                <MilestoneItem
+                  key={milestone.id}
+                  milestone={milestone}
+                  onEdit={onEditMilestone}
+                  onDelete={onDeleteMilestone}
+                  onFilterCards={onFilterCards}
+                />
+              ))
+            ) : (
+              <p>Нет этапов для этой цели.</p>
+            )}
+          </MilestonesContainer>
+        </>
+      )}
     </ObjectiveContainer>
   );
 }
