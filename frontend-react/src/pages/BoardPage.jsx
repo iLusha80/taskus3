@@ -52,6 +52,7 @@ function BoardPage() {
   const [modalConfig, setModalConfig] = useState({});
   const [editingCard, setEditingCard] = useState(null); // Новое состояние для редактируемой карточки
   const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(false); // Состояние для автообновления
+  const [milestones, setMilestones] = useState([]); // Состояние для хранения этапов
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -63,6 +64,7 @@ function BoardPage() {
   useEffect(() => {
     if (boardId) {
       fetchColumns();
+      fetchMilestonesForProject(); // Загружаем этапы при загрузке страницы
     }
   }, [boardId]);
 
@@ -119,20 +121,25 @@ const fetchColumns = async () => {
     title: 'Создать новую задачу',
     fields: [
       { id: 'cardTitle', label: 'Название задачи', type: 'text', required: true, fullWidth: true },
-      { id: 'cardDescription', label: 'Описание задачи (необязательно)', type: 'textarea', required: false, fullWidth: true }
+      { id: 'cardDescription', label: 'Описание задачи (необязательно)', type: 'textarea', required: false, fullWidth: true },
+      {
+        id: 'milestone_id',
+        label: 'Этап (Milestone)',
+        type: 'select',
+        options: [{ value: '', label: 'Без этапа' }, ...milestones.map(m => ({ value: m.id, label: m.name }))],
+        required: false,
+        fullWidth: true
+      }
     ],
     onSave: async (formData) => {
-      const { cardTitle, cardDescription } = formData;
+      const { cardTitle, cardDescription, milestone_id } = formData;
       if (cardTitle) {
         try {
-          // Находим первую колонку из текущего состояния
           let firstColumn = columns[0];
           if (!firstColumn) {
-            // Если колонок нет в состоянии, запрашиваем их с бэкенда
             const backendColumns = await api.getColumns(boardId);
             firstColumn = backendColumns[0];
             if (!firstColumn) {
-              // Если колонок все еще нет, создаем новую
               firstColumn = await api.createColumn(boardId, {
                 name: 'К выполнению',
                 position: 0,
@@ -141,11 +148,11 @@ const fetchColumns = async () => {
             }
           }
 
-          // Создаем карточку в первой колонке
-          const newCard = await api.createCard(firstColumn.id, { 
-            title: cardTitle, 
-            description: cardDescription, 
-            position: 0 
+          const newCard = await api.createCard(firstColumn.id, {
+            title: cardTitle,
+            description: cardDescription,
+            position: 0,
+            milestone_id: milestone_id || null // Добавляем milestone_id
           });
           
           if (newCard && newCard.id) {
@@ -178,7 +185,15 @@ const fetchColumns = async () => {
        { id: 'task_type', label: 'Тип задачи', type: 'text', required: false, defaultValue: card.task_type },
        { id: 'start_date', label: 'Дата начала', type: 'date', required: false, defaultValue: card.start_date ? card.start_date.split('T')[0] : '' },
        { id: 'due_date', label: 'Дата завершения', type: 'date', required: false, defaultValue: card.due_date ? card.due_date.split('T')[0] : '' },
-       // position и metadata пока не добавляем для редактирования через форму
+       {
+         id: 'milestone_id',
+         label: 'Этап (Milestone)',
+         type: 'select',
+         options: [{ value: '', label: 'Без этапа' }, ...milestones.map(m => ({ value: m.id, label: m.name }))],
+         required: false,
+         fullWidth: true,
+         defaultValue: card.milestone_id || ''
+       }
      ],
      onSave: async (formData) => {
        try {
@@ -226,6 +241,16 @@ const fetchColumns = async () => {
         showNotification('Перемещение карточек между колонками пока не реализовано.', 'info');
         console.log(`Card ${active.id} moved from column ${activeColumn?.id} to column ${overColumn?.id}`);
       }
+    }
+  };
+
+  const fetchMilestonesForProject = async () => {
+    try {
+      const data = await api.getMilestonesByProject(projectId);
+      setMilestones(data);
+    } catch (error) {
+      showNotification('Ошибка при загрузке этапов проекта.', 'error');
+      console.error('Error fetching milestones for project:', error);
     }
   };
 

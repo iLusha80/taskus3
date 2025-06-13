@@ -92,6 +92,10 @@ function BoardNavigation() {
     navigate(`/project/${projectId}/board/${id}`);
   };
 
+  const handleRoadmapClick = () => {
+    navigate(`/project/${projectId}/roadmap`);
+  };
+
   return (
     <MainNav>
       <NavList>
@@ -101,6 +105,14 @@ function BoardNavigation() {
           </StyledButton>
         </NavItem>
         {projectName && <NavItem><ProjectNameHeading>Проект: {projectName}</ProjectNameHeading></NavItem>}
+        <NavItem>
+          <BoardButton
+            onClick={handleRoadmapClick}
+            className={location.pathname.includes('/roadmap') ? 'active' : ''}
+          >
+            Roadmap
+          </BoardButton>
+        </NavItem>
         {boards.length > 0 ? (
           boards.map(board => (
             <NavItem key={board.id}>

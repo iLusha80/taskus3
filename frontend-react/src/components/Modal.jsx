@@ -54,6 +54,17 @@ const Modal = ({ title, message, fields, onSave, onConfirm, isConfirm, onClose, 
                     onChange={handleChange}
                     required={field.required}
                   />
+                ) : field.type === 'select' ? (
+                  <select
+                    id={field.id}
+                    value={formData[field.id] !== undefined ? formData[field.id] : ''}
+                    onChange={handleChange}
+                    required={field.required}
+                  >
+                    {field.options && field.options.map(option => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
                 ) : (
                   <input
                     type={field.type}
