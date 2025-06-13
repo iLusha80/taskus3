@@ -53,6 +53,7 @@ function BoardPage() {
   const [editingCard, setEditingCard] = useState(null); // Новое состояние для редактируемой карточки
   const [autoRefreshEnabled, setAutoRefreshEnabled] = useState(false); // Состояние для автообновления
   const [milestones, setMilestones] = useState([]); // Состояние для хранения этапов
+  const [agents, setAgents] = useState([]); // Новое состояние для хранения исполнителей
 
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -65,6 +66,7 @@ function BoardPage() {
     if (boardId) {
       fetchColumns();
       fetchMilestonesForProject(); // Загружаем этапы при загрузке страницы
+      fetchAgents(); // Загружаем исполнителей
     }
   }, [boardId]);
 
@@ -129,10 +131,18 @@ const fetchColumns = async () => {
         options: [{ value: '', label: 'Без этапа' }, ...milestones.map(m => ({ value: m.id, label: m.name }))],
         required: false,
         fullWidth: true
+      },
+      {
+        id: 'assigned_agent_id',
+        label: 'Исполнитель',
+        type: 'select',
+        options: [{ value: '', label: 'Не назначен' }, ...agents.map(agent => ({ value: agent.id, label: agent.name }))],
+        required: false,
+        fullWidth: true
       }
     ],
     onSave: async (formData) => {
-      const { cardTitle, cardDescription, milestone_id } = formData;
+      const { cardTitle, cardDescription, milestone_id, assigned_agent_id } = formData;
       if (cardTitle) {
         try {
           let firstColumn = columns[0];
@@ -152,7 +162,8 @@ const fetchColumns = async () => {
             title: cardTitle,
             description: cardDescription,
             position: 0,
-            milestone_id: milestone_id || null // Добавляем milestone_id
+            milestone_id: milestone_id || null,
+            assigned_agent_id: assigned_agent_id || null
           });
           
           if (newCard && newCard.id) {
@@ -188,7 +199,15 @@ const fetchColumns = async () => {
          fullWidth: true,
          defaultValue: card.column_id
        },
-       { id: 'assigned_agent_id', label: 'Исполнитель (ID)', type: 'text', required: false, defaultValue: card.assigned_agent_id },
+       {
+         id: 'assigned_agent_id',
+         label: 'Исполнитель',
+         type: 'select',
+         options: [{ value: '', label: 'Не назначен' }, ...agents.map(agent => ({ value: agent.id, label: agent.name }))],
+         required: false,
+         fullWidth: true,
+         defaultValue: card.assigned_agent_id || ''
+       },
        {
          id: 'milestone_id',
          label: 'Этап (Milestone)',
@@ -265,6 +284,16 @@ const fetchColumns = async () => {
     } catch (error) {
       showNotification('Ошибка при загрузке этапов проекта.', 'error');
       console.error('Error fetching milestones for project:', error);
+    }
+  };
+
+  const fetchAgents = async () => {
+    try {
+      const data = await api.getAgents();
+      setAgents(data);
+    } catch (error) {
+      showNotification('Ошибка при загрузке исполнителей.', 'error');
+      console.error('Error fetching agents:', error);
     }
   };
 

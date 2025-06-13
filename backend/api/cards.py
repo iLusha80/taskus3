@@ -41,6 +41,11 @@ def create_card(column_id):
     description = data.get('description')
     priority = data.get('priority', 'medium')
     assigned_agent_id = data.get('assigned_agent_id')
+    if assigned_agent_id is not None:
+        try:
+            assigned_agent_id = int(assigned_agent_id)
+        except ValueError:
+            return jsonify({'error': 'assigned_agent_id must be an integer'}), 400
     task_type = data.get('task_type')
     start_date = data.get('start_date')
     due_date = data.get('due_date')

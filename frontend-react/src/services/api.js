@@ -197,7 +197,15 @@ const api = {
     getCardsByMilestone: async (objectiveId, milestoneId) => {
         const response = await fetch(`${API_BASE_URL}/objectives/${objectiveId}/milestones/${milestoneId}/cards`);
         return response.json();
-    }
+    },
+
+    getAgents: async () => {
+        const response = await fetch(`${API_BASE_URL}/agents`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+    },
 };
 
 export default api;

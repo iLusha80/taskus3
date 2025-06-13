@@ -12,6 +12,7 @@ def register_blueprints(app):
     from .cards import cards_bp
     from .objectives import objectives_bp
     from .milestones import milestones_bp
+    from .agents import agents_bp
 
     app.register_blueprint(projects_bp)
     app.register_blueprint(boards_bp)
@@ -19,3 +20,4 @@ def register_blueprints(app):
     app.register_blueprint(cards_bp)
     app.register_blueprint(objectives_bp)
     app.register_blueprint(milestones_bp)
+    app.register_blueprint(agents_bp)

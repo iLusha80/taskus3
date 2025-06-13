@@ -9,6 +9,7 @@ from models.board import Board
 from models.column import Column
 from models.card import Card
 from models.history import CardHistory
+from models.agent import Agent # Импортируем модель Agent
 
 app = Flask(__name__)
 """Основное приложение Flask для AI Task Tracker.
@@ -24,6 +25,20 @@ db.init_app(app)
 
 with app.app_context():
     init_db(app)
+
+    # Инициализация предопределенных агентов
+    initial_agents = [
+        'Менеджер проекта',
+        'Архитектор',
+        'Backend-разработчик',
+        'Frontend-разработчик',
+        'DevOps'
+    ]
+    for agent_name in initial_agents:
+        if not Agent.query.filter_by(name=agent_name).first():
+            new_agent = Agent(name=agent_name)
+            db.session.add(new_agent)
+    db.session.commit()
 
 register_blueprints(app)
 @app.route('/', defaults={'path': ''})
