@@ -15,7 +15,7 @@ const StyledHeader = styled.header`
   border-bottom: 2px solid ${({ theme }) => theme.colors.grayDark}; /* Более выраженная граница */
   box-shadow: ${({ theme }) => theme.boxShadow.medium}; /* Усиленная тень */
   display: flex;
-  justify-content: space-between;
+  justify-content: center; /* Центрирование содержимого */
   align-items: center;
   height: 60px; /* Фиксированная высота */
   position: sticky; /* Закрепленный хедер */
@@ -34,6 +34,8 @@ const LogoPlaceholder = styled.div`
 
 const HeaderTitle = styled.h1`
   margin: 0;
+  width: 100%; /* Занимает всю доступную ширину */
+  text-align: center; /* Центрирование текста */
   font-size: ${({ theme }) => theme.typography.heading1.fontSize}; /* Более крупный заголовок */
   font-weight: ${({ theme }) => theme.typography.heading1.fontWeight};
 
@@ -100,10 +102,8 @@ function App() {
     <Router>
       <div id="root-container" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}> {/* Обертка для flexbox и фиксации футера */}
         <StyledHeader> {/* Use styled header */}
-          <div style={{ display: 'flex', alignItems: 'center' }}>
-            <LogoPlaceholder /> {/* Logo placeholder */}
-            <HeaderTitle><Link to="/">AI Task Tracker</Link></HeaderTitle> {/* Styled title */}
-          </div>
+          {/* Удален LogoPlaceholder, HeaderTitle центрируется */}
+          <HeaderTitle><Link to="/">AI Task Tracker</Link></HeaderTitle> {/* Styled title */}
         </StyledHeader>
         <main style={{ flexGrow: 1 }}> {/* Основной контент занимает все доступное пространство */}
           <Routes>
@@ -125,7 +125,7 @@ function App() {
           </Routes>
         </main>
         <StyledFooter> {/* Use styled footer */}
-          <p>&copy; 2023 Taskus. Все права защищены.</p>
+          <p>&copy; 2023 AI Task Tracker. Все права защищены.</p>
         </StyledFooter>
         {/* Modal component */}
         {isModalOpen && (
