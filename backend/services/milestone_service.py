@@ -59,6 +59,24 @@ class MilestoneService:
         return Milestone.query.filter_by(objective_id=objective_id).all()
 
     @staticmethod
+    def get_milestones_by_project(project_id):
+        """Получает все этапы для указанного проекта.
+
+        Args:
+            project_id (int): ID проекта.
+
+        Returns:
+            list: Список объектов Milestone.
+        """
+        from models.objective import Objective # Импортируем здесь, чтобы избежать циклической зависимости
+        objectives = Objective.query.filter_by(project_id=project_id).all()
+        all_milestones = []
+        for objective in objectives:
+            milestones = Milestone.query.filter_by(objective_id=objective.id).all()
+            all_milestones.extend(milestones)
+        return all_milestones
+
+    @staticmethod
     def update_milestone(milestone_id, data):
         """Обновляет существующий этап.
 

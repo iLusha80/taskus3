@@ -45,6 +45,19 @@ def get_milestones_for_objective(objective_id):
     milestones = MilestoneService.get_milestones_by_objective(objective_id)
     return jsonify([m.to_dict() for m in milestones])
 
+@milestones_bp.route('/projects/<int:project_id>/milestones', methods=['GET'])
+def get_milestones_for_project(project_id):
+    """Получает список этапов для указанного проекта.
+
+    Args:
+        project_id (int): ID проекта.
+
+    Returns:
+        flask.Response: JSON-ответ, содержащий список этапов.
+    """
+    milestones = MilestoneService.get_milestones_by_project(project_id)
+    return jsonify([m.to_dict() for m in milestones])
+
 @milestones_bp.route('/milestones/<int:milestone_id>', methods=['GET'])
 def get_milestone(milestone_id):
     """Получает этап по его ID.
