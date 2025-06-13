@@ -27,16 +27,16 @@ with app.app_context():
     init_db(app)
 
     # Инициализация предопределенных агентов
-    initial_agents = [
-        'Менеджер проекта',
-        'Архитектор',
-        'Backend-разработчик',
-        'Frontend-разработчик',
-        'DevOps'
-    ]
-    for agent_name in initial_agents:
+    initial_agents_data = {
+        'Менеджер проекта': '#FF5733', # Оранжевый
+        'Архитектор': '#33FF57',      # Зеленый
+        'Backend-разработчик': '#3357FF', # Синий
+        'Frontend-разработчик': '#FF33F0', # Розовый
+        'DevOps': '#33FFF0'           # Бирюзовый
+    }
+    for agent_name, agent_color in initial_agents_data.items():
         if not Agent.query.filter_by(name=agent_name).first():
-            new_agent = Agent(name=agent_name)
+            new_agent = Agent(name=agent_name, color=agent_color)
             db.session.add(new_agent)
     db.session.commit()
 

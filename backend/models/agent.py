@@ -9,6 +9,7 @@ class Agent(db.Model):
     """
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text, unique=True, nullable=False)
+    color = db.Column(db.Text, nullable=True) # Новое поле для цвета
 
     def to_dict(self):
         """Преобразует объект Agent в словарь.
@@ -18,5 +19,6 @@ class Agent(db.Model):
         """
         return {
             'id': self.id,
-            'name': self.name
+            'name': self.name,
+            'color': self.color
         }

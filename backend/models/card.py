@@ -55,6 +55,7 @@ class Card(db.Model):
             'priority': self.priority,
             'assigned_agent_id': self.assigned_agent_id,
             'assigned_agent_name': self.assigned_agent.name if self.assigned_agent else None,
+            'assigned_agent_color': self.assigned_agent.color if self.assigned_agent else None,
             'task_type': self.task_type,
             'start_date': self.start_date,
             'due_date': self.due_date,
