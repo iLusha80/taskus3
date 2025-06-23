@@ -1,9 +1,10 @@
 import os
 from flask import Flask, send_from_directory
 from flask_cors import CORS
+from flask_restx import Api # Импортируем Api
 from config import Config
 from database import db, init_db
-from api import register_blueprints
+from api import register_api_namespaces # Изменяем импорт
 from models.project import Project
 from models.board import Board
 from models.column import Column
@@ -12,6 +13,8 @@ from models.history import CardHistory
 from models.agent import Agent # Импортируем модель Agent
 
 app = Flask(__name__)
+api = Api(app, version='1.0', title='AI Task Tracker API',
+          description='API для управления проектами, досками, задачами и агентами.')
 """Основное приложение Flask для AI Task Tracker.
 
 Инициализирует приложение Flask, настраивает CORS, подключается к базе данных
@@ -40,7 +43,6 @@ with app.app_context():
             db.session.add(new_agent)
     db.session.commit()
 
-register_blueprints(app)
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def serve_frontend(path):
@@ -58,3 +60,7 @@ def serve_frontend(path):
         return send_from_directory(app.static_folder, 'index.html')
 
 app.static_folder = os.path.abspath('../frontend')
+
+# Регистрация пространств имен API после определения маршрутов фронтенда
+# Это гарантирует, что API-маршруты будут иметь приоритет над маршрутами статических файлов.
+register_api_namespaces(api)

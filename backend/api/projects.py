@@ -1,87 +1,84 @@
-from flask import Blueprint, request, jsonify
+from flask import request, jsonify
+from flask_restx import Namespace, Resource, fields
 from services.project_service import ProjectService
+from database import db # Добавляем импорт db
 
-projects_bp = Blueprint('projects', __name__, url_prefix='/api/v1/projects')
-"""Блюпринт для управления проектами.
+api = Namespace('projects', description='Операции, связанные с проектами')
 
-Предоставляет эндпоинты для создания, получения, обновления и удаления проектов.
-"""
+# Модель для ответа проекта
+project_model = api.model('Project', {
+    'id': fields.Integer(readOnly=True, description='Уникальный идентификатор проекта'),
+    'name': fields.String(required=True, description='Название проекта'),
+    'description': fields.String(description='Описание проекта'),
+    'metadata': fields.String(description='Метаданные проекта в формате JSON'),
+    'created_at': fields.DateTime(readOnly=True, description='Дата создания проекта'),
+    'updated_at': fields.DateTime(readOnly=True, description='Дата последнего обновления проекта'),
+})
 
-@projects_bp.route('/', methods=['GET'])
-def get_projects():
-    """Получает список всех проектов.
+# Модель для входных данных проекта
+project_input_model = api.model('ProjectInput', {
+    'name': fields.String(required=True, description='Название проекта'),
+    'description': fields.String(description='Описание проекта'),
+    'metadata': fields.String(description='Метаданные проекта в формате JSON'),
+})
 
-    Returns:
-        flask.Response: JSON-ответ, содержащий список проектов.
-    """
-    projects = ProjectService.get_all_projects()
-    return jsonify([p.to_dict() for p in projects])
+@api.route('/')
+class ProjectList(Resource):
+    @api.doc('list_projects')
+    @api.marshal_list_with(project_model)
+    def get(self):
+        """Получить список всех проектов"""
+        projects = ProjectService.get_all_projects()
+        return [p.to_dict() for p in projects]
 
-@projects_bp.route('/', methods=['POST'])
-def create_project():
-    """Создает новый проект.
+    @api.doc('create_project')
+    @api.expect(project_input_model)
+    @api.marshal_with(project_model, code=201)
+    @api.response(400, 'Неверные входные данные')
+    def post(self):
+        """Создать новый проект"""
+        data = request.get_json()
+        name = data.get('name')
+        description = data.get('description')
+        metadata = data.get('metadata', '{}')
 
-    Принимает данные проекта в формате JSON.
+        if not name:
+            api.abort(400, 'Название обязательно')
 
-    Returns:
-        flask.Response: JSON-ответ, содержащий новый проект, или сообщение об ошибке.
-    """
-    data = request.get_json()
-    name = data.get('name')
-    description = data.get('description')
-    metadata = data.get('metadata', '{}')
+        new_project = ProjectService.create_project(name, description, metadata)
+        return new_project.to_dict(), 201
 
-    if not name:
-        return jsonify({'error': 'Name is required'}), 400
+@api.route('/<int:project_id>')
+@api.param('project_id', 'Уникальный идентификатор проекта')
+@api.response(404, 'Проект не найден')
+class Project(Resource):
+    @api.doc('get_project')
+    @api.marshal_with(project_model)
+    def get(self, project_id):
+        """Получить проект по ID"""
+        project = ProjectService.get_project_by_id(project_id)
+        if project is None:
+            api.abort(404, 'Проект не найден')
+        return project.to_dict()
 
-    new_project = ProjectService.create_project(name, description, metadata)
-    return jsonify(new_project.to_dict()), 201
+    @api.doc('update_project')
+    @api.expect(project_input_model)
+    @api.marshal_with(project_model)
+    @api.response(400, 'Нет данных для обновления')
+    def put(self, project_id):
+        """Обновить существующий проект"""
+        data = request.get_json()
+        updated_project = ProjectService.update_project(project_id, data)
+        if updated_project is None:
+            api.abort(404, 'Проект не найден')
+        if not data:
+            api.abort(400, 'Нет полей для обновления')
+        return updated_project.to_dict()
 
-@projects_bp.route('/<int:project_id>', methods=['GET'])
-def get_project(project_id):
-    """Получает проект по его ID.
-
-    Args:
-        project_id (int): ID проекта.
-
-    Returns:
-        flask.Response: JSON-ответ, содержащий проект, или сообщение об ошибке, если проект не найден.
-    """
-    project = ProjectService.get_project_by_id(project_id)
-    if project is None:
-        return jsonify({'error': 'Project not found'}), 404
-    return jsonify(project.to_dict())
-
-@projects_bp.route('/<int:project_id>', methods=['PUT'])
-def update_project(project_id):
-    """Обновляет существующий проект.
-
-    Принимает ID проекта и данные для обновления в формате JSON.
-
-    Args:
-        project_id (int): ID проекта.
-
-    Returns:
-        flask.Response: JSON-ответ, содержащий обновленный проект, или сообщение об ошибке.
-    """
-    data = request.get_json()
-    updated_project = ProjectService.update_project(project_id, data)
-    if updated_project is None:
-        return jsonify({'error': 'Project not found'}), 404
-    if not data:
-        return jsonify({'error': 'No fields to update'}), 400
-    return jsonify(updated_project.to_dict())
-
-@projects_bp.route('/<int:project_id>', methods=['DELETE'])
-def delete_project(project_id):
-    """Удаляет проект по его ID.
-
-    Args:
-        project_id (int): ID проекта.
-
-    Returns:
-        flask.Response: Пустой ответ со статусом 204 при успешном удалении, или сообщение об ошибке.
-    """
-    if not ProjectService.delete_project(project_id):
-        return jsonify({'error': 'Project not found'}), 404
-    return '', 204
+    @api.doc('delete_project')
+    @api.response(204, 'Проект успешно удален')
+    def delete(self, project_id):
+        """Удалить проект"""
+        if not ProjectService.delete_project(project_id):
+            api.abort(404, 'Проект не найден')
+        return '', 204

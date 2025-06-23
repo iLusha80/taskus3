@@ -1,97 +1,91 @@
-from flask import Blueprint, request, jsonify
+from flask import request, jsonify
+from flask_restx import Namespace, Resource, fields
 from services.column_service import ColumnService
+from database import db # Добавляем импорт db
 
-columns_bp = Blueprint('columns', __name__, url_prefix='/api/v1')
-"""Блюпринт для управления колонками.
+api = Namespace('columns', description='Операции, связанные с колонками')
 
-Предоставляет эндпоинты для создания, получения, обновления и удаления колонок.
-"""
+# Модель для ответа колонки
+column_model = api.model('Column', {
+    'id': fields.Integer(readOnly=True, description='Уникальный идентификатор колонки'),
+    'board_id': fields.Integer(required=True, description='ID доски, к которой принадлежит колонка'),
+    'name': fields.String(required=True, description='Название колонки'),
+    'position': fields.Integer(description='Позиция колонки на доске'),
+    'metadata': fields.String(description='Метаданные колонки в формате JSON'),
+    'created_at': fields.DateTime(readOnly=True, description='Дата создания колонки'),
+    'updated_at': fields.DateTime(readOnly=True, description='Дата последнего обновления колонки'),
+})
 
-@columns_bp.route('/boards/<int:board_id>/columns', methods=['GET'])
-def get_columns(board_id):
-    """Получает список колонок для указанной доски.
+# Модель для входных данных колонки
+column_input_model = api.model('ColumnInput', {
+    'name': fields.String(required=True, description='Название колонки'),
+    'position': fields.Integer(description='Позиция колонки на доске'),
+    'metadata': fields.String(description='Метаданные колонки в формате JSON'),
+})
 
-    Args:
-        board_id (int): ID доски.
+@api.route('/boards/<int:board_id>/columns')
+@api.param('board_id', 'Уникальный идентификатор доски')
+@api.response(404, 'Доска не найдена')
+class ColumnList(Resource):
+    @api.doc('list_columns')
+    @api.marshal_list_with(column_model)
+    def get(self, board_id):
+        """Получить список колонок для указанной доски"""
+        columns = ColumnService.get_columns_by_board(board_id)
+        if columns is None:
+            api.abort(404, 'Доска не найдена')
+        return [c.to_dict() for c in columns]
 
-    Returns:
-        flask.Response: JSON-ответ, содержащий список колонок, или сообщение об ошибке.
-    """
-    columns = ColumnService.get_columns_by_board(board_id)
-    if columns is None:
-        return jsonify({'error': 'Board not found'}), 404
-    return jsonify([c.to_dict() for c in columns])
+    @api.doc('create_column')
+    @api.expect(column_input_model)
+    @api.marshal_with(column_model, code=201)
+    @api.response(400, 'Неверные входные данные')
+    def post(self, board_id):
+        """Создать новую колонку для указанной доски"""
+        data = request.get_json()
+        name = data.get('name')
+        position = data.get('position')
+        metadata = data.get('metadata', '{}')
 
-@columns_bp.route('/boards/<int:board_id>/columns', methods=['POST'])
-def create_column(board_id):
-    """Создает новую колонку для указанной доски.
+        if not name:
+            api.abort(400, 'Название обязательно')
 
-    Принимает данные колонки в формате JSON.
+        new_column = ColumnService.create_column(board_id, name, position, metadata)
+        if new_column is None:
+            api.abort(404, 'Доска не найдена')
+        return new_column.to_dict(), 201
 
-    Args:
-        board_id (int): ID доски, к которой будет принадлежать колонка.
+@api.route('/columns/<int:column_id>')
+@api.param('column_id', 'Уникальный идентификатор колонки')
+@api.response(404, 'Колонка не найдена')
+class Column(Resource):
+    @api.doc('get_column')
+    @api.marshal_with(column_model)
+    def get(self, column_id):
+        """Получить колонку по ее ID"""
+        column = ColumnService.get_column_by_id(column_id)
+        if column is None:
+            api.abort(404, 'Колонка не найдена')
+        return column.to_dict()
 
-    Returns:
-        flask.Response: JSON-ответ, содержащий новую колонку, или сообщение об ошибке.
-    """
-    data = request.get_json()
-    name = data.get('name')
-    position = data.get('position')
-    metadata = data.get('metadata', '{}')
+    @api.doc('update_column')
+    @api.expect(column_input_model)
+    @api.marshal_with(column_model)
+    @api.response(400, 'Нет данных для обновления')
+    def put(self, column_id):
+        """Обновить существующую колонку"""
+        data = request.get_json()
+        updated_column = ColumnService.update_column(column_id, data)
+        if updated_column is None:
+            api.abort(404, 'Колонка не найдена')
+        if not data:
+            api.abort(400, 'Нет полей для обновления')
+        return updated_column.to_dict()
 
-    if not name:
-        return jsonify({'error': 'Name is required'}), 400
-
-    new_column = ColumnService.create_column(board_id, name, position, metadata)
-    if new_column is None:
-        return jsonify({'error': 'Board not found'}), 404
-    return jsonify(new_column.to_dict()), 201
-
-@columns_bp.route('/columns/<int:column_id>', methods=['GET'])
-def get_column(column_id):
-    """Получает колонку по ее ID.
-
-    Args:
-        column_id (int): ID колонки.
-
-    Returns:
-        flask.Response: JSON-ответ, содержащий колонку, или сообщение об ошибке, если колонка не найдена.
-    """
-    column = ColumnService.get_column_by_id(column_id)
-    if column is None:
-        return jsonify({'error': 'Column not found'}), 404
-    return jsonify(column.to_dict())
-
-@columns_bp.route('/columns/<int:column_id>', methods=['PUT'])
-def update_column(column_id):
-    """Обновляет существующую колонку.
-
-    Принимает ID колонки и данные для обновления в формате JSON.
-
-    Args:
-        column_id (int): ID колонки.
-
-    Returns:
-        flask.Response: JSON-ответ, содержащий обновленную колонку, или сообщение об ошибке.
-    """
-    data = request.get_json()
-    updated_column = ColumnService.update_column(column_id, data)
-    if updated_column is None:
-        return jsonify({'error': 'Column not found'}), 404
-    if not data:
-        return jsonify({'error': 'No fields to update'}), 400
-    return jsonify(updated_column.to_dict())
-
-@columns_bp.route('/columns/<int:column_id>', methods=['DELETE'])
-def delete_column(column_id):
-    """Удаляет колонку по ее ID.
-
-    Args:
-        column_id (int): ID колонки.
-
-    Returns:
-        flask.Response: Пустой ответ со статусом 204 при успешном удалении, или сообщение об ошибке.
-    """
-    if not ColumnService.delete_column(column_id):
-        return jsonify({'error': 'Column not found'}), 404
-    return '', 204
+    @api.doc('delete_column')
+    @api.response(204, 'Колонка успешно удалена')
+    def delete(self, column_id):
+        """Удалить колонку"""
+        if not ColumnService.delete_column(column_id):
+            api.abort(404, 'Колонка не найдена')
+        return '', 204

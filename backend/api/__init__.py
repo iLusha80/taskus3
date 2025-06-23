@@ -1,23 +1,23 @@
-from flask import Blueprint
+from flask_restx import Namespace
 
-def register_blueprints(app):
-    """Регистрирует все блюпринты API в приложении Flask.
+def register_api_namespaces(api):
+    """Регистрирует все пространства имен API в приложении Flask-RESTX.
 
     Args:
-        app (Flask): Экземпляр приложения Flask.
+        api (Api): Экземпляр Flask-RESTX Api.
     """
-    from .projects import projects_bp
-    from .boards import boards_bp
-    from .columns import columns_bp
-    from .cards import cards_bp
-    from .objectives import objectives_bp
-    from .milestones import milestones_bp
-    from .agents import agents_bp
+    from .projects import api as projects_ns
+    from .boards import api as boards_ns
+    from .columns import api as columns_ns
+    from .cards import api as cards_ns
+    from .objectives import api as objectives_ns
+    from .milestones import api as milestones_ns
+    from .agents import api as agents_ns
 
-    app.register_blueprint(projects_bp)
-    app.register_blueprint(boards_bp)
-    app.register_blueprint(columns_bp)
-    app.register_blueprint(cards_bp)
-    app.register_blueprint(objectives_bp)
-    app.register_blueprint(milestones_bp)
-    app.register_blueprint(agents_bp)
+    api.add_namespace(projects_ns)
+    api.add_namespace(boards_ns)
+    api.add_namespace(columns_ns)
+    api.add_namespace(cards_ns)
+    api.add_namespace(objectives_ns)
+    api.add_namespace(milestones_ns)
+    api.add_namespace(agents_ns)
