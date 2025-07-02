@@ -25,6 +25,18 @@ class ColumnService:
         return Column.query.filter_by(board_id=board_id).order_by(Column.position).all()
 
     @staticmethod
+    def get_columns_by_project_id(project_id):
+        """Получает список колонок для указанного проекта.
+
+        Args:
+            project_id (int): ID проекта.
+
+        Returns:
+            list[Column] or None: Список объектов Column, если проект найден, иначе None.
+        """
+        return Column.query.filter_by(project_id=project_id).all()
+
+    @staticmethod
     def get_column_by_id(column_id):
         """Получает колонку по ее ID.
 

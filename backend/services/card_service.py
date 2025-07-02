@@ -56,7 +56,9 @@ class CardService:
         return Card.query.filter_by(milestone_id=milestone_id).order_by(Card.position).all()
 
     @staticmethod
-    def create_card(column_id, title, description, priority, assigned_agent_id, task_type, start_date, due_date, position, metadata, milestone_id=None):
+    def create_card(column_id, title, description, priority, assigned_agent_id,
+                    task_type, start_date, due_date, position,
+                    metadata, milestone_id=None):
         """Создает новую карточку в базе данных.
 
         Также добавляет запись в историю о создании карточки.
@@ -72,6 +74,7 @@ class CardService:
             due_date (str): Дата выполнения задачи (необязательно, формат YYYY-MM-DD).
             position (int): Позиция карточки в колонке (по умолчанию 0).
             metadata (str): Дополнительные метаданные карточки в формате JSON-строки.
+            milestone_id (int): ID этапа (необязательно).
 
         Returns:
             Card or None: Созданный объект Card, если колонка найдена, иначе None.

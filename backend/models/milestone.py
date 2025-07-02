@@ -21,7 +21,8 @@ class Milestone(db.Model):
     status = db.Column(db.Text, default='not_started')
     due_date = db.Column(db.Text, nullable=True)
     created_at = db.Column(db.Text, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-    updated_at = db.Column(db.Text, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'), onupdate=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
+    updated_at = db.Column(db.Text, default=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                           onupdate=datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 
     cards = db.relationship('Card', backref='milestone', lazy=True, cascade="all, delete-orphan")
 

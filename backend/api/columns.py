@@ -22,6 +22,20 @@ def get_columns(board_id):
         return jsonify({'error': 'Board not found'}), 404
     return jsonify([c.to_dict() for c in columns])
 
+@columns_bp.route('/projects/<int:project_id>/columns', methods=['GET'])
+def get_columns_by_project(project_id: int):
+    """
+    Получает список колонок для указанного проекта.
+
+    Args:
+        project_id (int): ID проекта.
+
+    Returns:
+        flask.Response: JSON-ответ, содержащий список колонок, или сообщение об ошибке.
+    """
+    columns = ColumnService.get_columns_by_project(project_id)
+    return jsonify([c.to_dict() for c in columns])
+
 @columns_bp.route('/boards/<int:board_id>/columns', methods=['POST'])
 def create_column(board_id):
     """Создает новую колонку для указанной доски.
