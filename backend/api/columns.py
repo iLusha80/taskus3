@@ -38,7 +38,7 @@ def get_columns_by_project(project_id: int):
     boards = BoardService.get_boards_by_project(project_id)
     main_board = min(boards, key=lambda b: b.id)
 
-    columns = ColumnService.get_columns_by_board(main_board)
+    columns = ColumnService.get_columns_by_board(main_board.id)
     return jsonify([c.to_dict() for c in columns])
 
 @columns_bp.route('/boards/<int:board_id>/columns', methods=['POST'])
