@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from services.column_service import ColumnService
+from services.board_service import BoardService
 
 columns_bp = Blueprint('columns', __name__, url_prefix='/api/v1')
 """Блюпринт для управления колонками.
@@ -33,7 +34,11 @@ def get_columns_by_project(project_id: int):
     Returns:
         flask.Response: JSON-ответ, содержащий список колонок, или сообщение об ошибке.
     """
-    columns = ColumnService.get_columns_by_project(project_id)
+
+    boards = BoardService.get_boards_by_project(project_id)
+    main_board = min(boards, key=lambda b: b.id)
+
+    columns = ColumnService.get_columns_by_board(main_board)
     return jsonify([c.to_dict() for c in columns])
 
 @columns_bp.route('/boards/<int:board_id>/columns', methods=['POST'])
