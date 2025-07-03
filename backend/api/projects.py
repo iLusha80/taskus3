@@ -98,4 +98,7 @@ def get_cards_for_project(project_id):
         flask.Response: JSON-ответ, содержащий список карточек.
     """
     cards = CardService.get_cards_by_project(project_id)
-    return jsonify([card.to_dict() for card in cards])
+    return jsonify([
+        {**card_object.to_dict(), 'column_name': column_name}
+        for card_object, column_name in cards
+    ])

@@ -252,4 +252,4 @@ class CardService:
         """
         from models.board import Board
         from models.column import Column
-        return db.session.query(Card).join(Column).join(Board).filter(Board.project_id == project_id).all()
+        return db.session.query(Card, Column.name).join(Column).join(Board).filter(Board.project_id == project_id).all()
