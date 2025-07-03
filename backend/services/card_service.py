@@ -239,3 +239,17 @@ class CardService:
         if not card:
             return None
         return CardHistory.query.filter_by(card_id=card_id).order_by(CardHistory.timestamp).all()
+
+    @staticmethod
+    def get_cards_by_project(project_id):
+        """Получает список всех карточек, связанных с указанным project_id.
+
+        Args:
+            project_id (int): ID проекта.
+
+        Returns:
+            list[Card]: Список объектов Card, связанных с проектом.
+        """
+        from models.board import Board
+        from models.column import Column
+        return db.session.query(Card).join(Column).join(Board).filter(Board.project_id == project_id).all()

@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from services.project_service import ProjectService
+from services.card_service import CardService
 
 projects_bp = Blueprint('projects', __name__, url_prefix='/api/v1/projects')
 """Блюпринт для управления проектами.
@@ -85,3 +86,16 @@ def delete_project(project_id):
     if not ProjectService.delete_project(project_id):
         return jsonify({'error': 'Project not found'}), 404
     return '', 204
+
+@projects_bp.route('/<int:project_id>/cards', methods=['GET'])
+def get_cards_for_project(project_id):
+    """Получает все карточки, связанные с указанным project_id.
+
+    Args:
+        project_id (int): ID проекта.
+
+    Returns:
+        flask.Response: JSON-ответ, содержащий список карточек.
+    """
+    cards = CardService.get_cards_by_project(project_id)
+    return jsonify([card.to_dict() for card in cards])
