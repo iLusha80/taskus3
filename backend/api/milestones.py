@@ -22,12 +22,12 @@ def create_milestone(objective_id):
     data = request.get_json()
     name = data.get('name')
     description = data.get('description')
-    due_date = data.get('due_date')
+    status = data.get('status')
 
     if not name:
         return jsonify({'error': 'Name is required'}), 400
 
-    new_milestone = MilestoneService.create_milestone(objective_id, name, description, due_date)
+    new_milestone = MilestoneService.create_milestone(objective_id, name, description, status)
     if new_milestone is None:
         return jsonify({'error': 'Objective not found'}), 404
     return jsonify(new_milestone.to_dict()), 201

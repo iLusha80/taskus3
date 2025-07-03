@@ -7,14 +7,14 @@ class MilestoneService:
     """Сервис для управления этапами (Milestone)."""
 
     @staticmethod
-    def create_milestone(objective_id, name, description=None, due_date=None):
+    def create_milestone(objective_id, name, description=None, status='not_started'):
         """Создает новый этап.
 
         Args:
             objective_id (int): ID цели, к которой относится этап.
             name (str): Название этапа.
             description (str, optional): Описание этапа.
-            due_date (str, optional): Целевая дата завершения этапа.
+            status (str, optional): Текущий статус этапа.
 
         Returns:
             Milestone: Созданный объект этапа, или None, если цель не найдена.
@@ -27,8 +27,7 @@ class MilestoneService:
             objective_id=objective_id,
             name=name,
             description=description,
-            status='not_started',
-            due_date=due_date
+            status=status
         )
         db.session.add(new_milestone)
         db.session.commit()
