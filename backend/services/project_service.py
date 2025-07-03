@@ -40,7 +40,7 @@ class ProjectService:
         Returns:
             Project: Созданный объект Project.
         """
-        new_project = Project(name=name, description=description, metadata=metadata)
+        new_project = Project(name=name, description=description, project_metadata=metadata)
         db.session.add(new_project)
         db.session.commit()
         # Создаем доску "main" для нового проекта

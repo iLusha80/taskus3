@@ -34,7 +34,7 @@ def create_project():
     if not name:
         return jsonify({'error': 'Name is required'}), 400
 
-    new_project = ProjectService.create_project(name, description, metadata)
+    new_project = ProjectService.create_project(name=name, description=description, metadata=metadata)
     return jsonify(new_project.to_dict()), 201
 
 @projects_bp.route('/<int:project_id>', methods=['GET'])
